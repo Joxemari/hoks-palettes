@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hoks Palettes</title>
-<meta name="description" content="Colección personal de paletas de color · Joxemari Gallastegi">
+<meta name="description" content="A personal color palette collection">
 <meta property="og:title" content="Hoks Palettes">
-<meta property="og:description" content="Colección personal de paletas de color · Joxemari Gallastegi">
+<meta property="og:description" content="A personal color palette collection">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://joxemari.github.io/hoks-palettes/">
-<meta property="og:image" content="https://joxemari.github.io/hoks-palettes/preview.png">
+<meta property="og:url" content="https://hoks.github.io/">
+<meta property="og:image" content="https://hoks.github.io/preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Hoks Palettes">
-<meta name="twitter:description" content="Colección personal de paletas de color · Joxemari Gallastegi">
-<meta name="twitter:image" content="https://joxemari.github.io/hoks-palettes/preview.png">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 1'><rect x='0' y='0' width='1' height='1' fill='%23fed000'/><rect x='1' y='0' width='1' height='1' fill='%23ed361a'/><rect x='2' y='0' width='1' height='1' fill='%234464a1'/></svg>">
+<meta name="twitter:description" content="A personal color palette collection">
+<meta name="twitter:image" content="https://hoks.github.io/preview.png">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAA0CAYAAADrPTp5AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAAOElEQVR4nO3OMQEAMAyAMFr/njcZfYIBMtXrsL2cAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFR9hGUBZ/l8M6AAAAAASUVORK5CYII=">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,33 +46,21 @@ body {
 header {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 4rem 2rem 2.5rem;
+  padding: 2.5rem 2rem;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 2rem;
   border-bottom: 1px solid var(--border);
 }
 
-.header-left { display: flex; flex-direction: column; gap: 6px; }
+.header-left { display: flex; align-items: center; }
 
-.header-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink3);
+.logo {
+  height: 40px;
+  width: auto;
+  display: block;
 }
-
-h1 {
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  font-weight: 300;
-  letter-spacing: -0.04em;
-  color: var(--ink);
-  line-height: 1;
-}
-
-h1 strong { font-weight: 700; }
 
 .btn-new {
   font-family: var(--f);
@@ -206,7 +194,6 @@ h1 strong { font-weight: 700; }
   font-weight: 700;
   letter-spacing: 0.01em;
   color: var(--ink);
-  margin-bottom: 5px;
 }
 
 .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
@@ -261,6 +248,25 @@ h1 strong { font-weight: 700; }
   transition: color 0.12s, background 0.12s;
 }
 .btn-icon:hover { color: var(--ink); background: var(--surface); }
+
+
+/* ── TOGGLE ──────────────────────────────── */
+.toggle { position:relative; width:32px; height:18px; flex-shrink:0; display:inline-block; }
+.toggle input { opacity:0; width:0; height:0; position:absolute; }
+.toggle-track {
+  position:absolute; inset:0; background:var(--border-dark);
+  border-radius:9px; cursor:pointer; transition:background 0.2s;
+}
+.toggle input:checked + .toggle-track { background:#111111; }
+.toggle-thumb {
+  position:absolute; top:3px; left:3px; width:12px; height:12px;
+  background:#fff; border-radius:50%; transition:transform 0.2s; pointer-events:none;
+  z-index:1;
+}
+.toggle input:checked + .toggle-track + .toggle-thumb { transform:translateX(14px); }
+.palette-card.inactive { opacity:0.45; }
+.card-meta { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.card-date { font-size:9px; color:var(--ink3); font-family:monospace; }
 
 /* ── EMPTY ────────────────────────────────── */
 .empty-state {
@@ -522,21 +528,20 @@ h1 strong { font-weight: 700; }
 
 <header>
   <div class="header-left">
-    <span class="header-label">joxemari gallastegi</span>
-    <h1><strong>hoks</strong> palettes</h1>
+    <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAA0CAYAAADrPTp5AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAAOElEQVR4nO3OMQEAMAyAMFr/njcZfYIBMtXrsL2cAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFR9hGUBZ/l8M6AAAAAASUVORK5CYII=" alt="Hoks">
   </div>
-  <button class="btn-new" onclick="openModal()">+ nueva paleta</button>
+  <button class="btn-new" onclick="openModal()">+ new palette</button>
 </header>
 
 <div class="controls">
   <div class="search-wrap">
-    <input type="text" id="search" placeholder="buscar por nombre o etiqueta…">
+    <input type="text" id="search" placeholder="search by name or tag…">
   </div>
   <select class="sort-select" id="sort">
-    <option value="newest">más recientes</option>
-    <option value="oldest">más antiguas</option>
-    <option value="name">nombre</option>
-    <option value="colors">nº colores</option>
+    <option value="newest">newest first</option>
+    <option value="oldest">oldest first</option>
+    <option value="name">name</option>
+    <option value="colors">no. of colors</option>
   </select>
   <span class="count" id="count"></span>
 </div>
@@ -546,39 +551,39 @@ h1 strong { font-weight: 700; }
 <div class="overlay" id="overlay" onclick="closeIfBg(event)">
   <div class="modal">
     <div class="modal-header">
-      <h2 id="modalTitle">nueva paleta</h2>
+      <h2 id="modalTitle">new palette</h2>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
 
     <div class="field">
-      <label>nombre</label>
-      <input type="text" id="palName" placeholder="nombre de la paleta…">
+      <label>name</label>
+      <input type="text" id="palName" placeholder="palette name…">
     </div>
 
     <div class="field">
-      <label>etiquetas (separadas por coma)</label>
-      <input type="text" id="palTags" placeholder="naturaleza, suave, oscura…">
+      <label>tags (comma separated)</label>
+      <input type="text" id="palTags" placeholder="warm, nature, dark…">
     </div>
 
     <div class="field">
-      <label>colores</label>
+      <label>colors</label>
       <div class="color-chips" id="colorChips"></div>
       <div class="add-row">
         <input type="color" id="picker" value="#226699">
         <input type="text" id="hexInput" placeholder="#226699" maxlength="7">
-        <button class="btn-add-color" onclick="addColor()">añadir</button>
+        <button class="btn-add-color" onclick="addColor()">add</button>
       </div>
       <div class="preview-strip" id="preview" style="display:none"></div>
     </div>
 
     <div class="field">
-      <label>notas (opcional)</label>
-      <textarea id="palNotes" rows="2" placeholder="inspirada en…" style="resize:vertical;"></textarea>
+      <label>notes (optional)</label>
+      <textarea id="palNotes" rows="2" placeholder="inspired by…" style="resize:vertical;"></textarea>
     </div>
 
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">cancelar</button>
-      <button class="btn-save" onclick="savePal()">guardar</button>
+      <button class="btn-cancel" onclick="closeModal()">cancel</button>
+      <button class="btn-save" onclick="savePal()">save</button>
     </div>
   </div>
 </div>
@@ -588,15 +593,15 @@ h1 strong { font-weight: 700; }
 <script>
 const KEY = 'colorpals_v3';
 const DEFAULTS = [
-  { id:1,  name:"Science",    colors:["#ffe819","#000000"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-300000 },
-  { id:2,  name:"Mondrian",   colors:["#0a0a0a","#f7f3f2","#0077e1","#f5d216","#fc3503"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-299000 },
-  { id:3,  name:"Paint",      colors:["#b30000","#e6cf00","#1283b3","#fafafa","#0a0a0a"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-298000 },
-  { id:4,  name:"Morning",    colors:["#ffd919","#262104","#fffbe6"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-297000 },
-  { id:5,  name:"Evening",    colors:["#ff4f19","#15084d","#5ce6e6"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-296000 },
-  { id:6,  name:"Marble",     colors:["#218ad4","#76df55","#0b1435","#ffffff"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-295000 },
-  { id:7,  name:"Troll",      colors:["#294984","#6ca0a7","#ffc789","#df5f50","#5a3034","#fff1dd"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-294000 },
-  { id:8,  name:"Meta",       colors:["#226699","#dd2e44","#ffcc4d"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-293000 },
-  { id:9,  name:"Splash",     colors:["#32312e","#795330","#c7ae82","#f5f2e3"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-292000 },
+  { id:1,  name:"Science", active:true, active:true,    colors:["#ffe819","#000000"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-300000 },
+  { id:2,  name:"Mondrian", active:true,   colors:["#0a0a0a","#f7f3f2","#0077e1","#f5d216","#fc3503"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-299000 },
+  { id:3,  name:"Paint", active:true,      colors:["#b30000","#e6cf00","#1283b3","#fafafa","#0a0a0a"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-298000 },
+  { id:4,  name:"Morning", active:true,    colors:["#ffd919","#262104","#fffbe6"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-297000 },
+  { id:5,  name:"Evening", active:true,    colors:["#ff4f19","#15084d","#5ce6e6"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-296000 },
+  { id:6,  name:"Marble", active:true,     colors:["#218ad4","#76df55","#0b1435","#ffffff"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-295000 },
+  { id:7,  name:"Troll", active:true,      colors:["#294984","#6ca0a7","#ffc789","#df5f50","#5a3034","#fff1dd"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-294000 },
+  { id:8,  name:"Meta", active:true,       colors:["#226699","#dd2e44","#ffcc4d"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-293000 },
+  { id:9,  name:"Splash", active:true,     colors:["#32312e","#795330","#c7ae82","#f5f2e3"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-292000 },
   { id:10, name:"Sheets",     colors:["#025760","#7fd0d3","#b3ead7","#eff7f5","#fae9c1","#f8ca75","#e88d44"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-291000 },
   { id:11, name:"Her",        colors:["#cd1440","#fafafa"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-290000 },
   { id:12, name:"Fans",       colors:["#000000","#83a6bc","#faece1","#bab1a8"], tags:["roni kaufman"], notes:"from ronikaufman.github.io/color_pals", created:Date.now()-289000 },
@@ -636,33 +641,47 @@ function render() {
   if (srt==='name') list.sort((a,b)=>a.name.localeCompare(b.name,'es'));
   if (srt==='colors') list.sort((a,b)=>b.colors.length-a.colors.length);
 
-  $('count').textContent = list.length + (list.length===1?' paleta':' paletas');
+  $('count').textContent = list.length + (list.length===1?' palette':' palettes');
   const grid = $('grid');
 
   if (!list.length) {
-    grid.innerHTML = `<div class="empty-state"><p class="empty-big">sin resultados</p><p class="empty-sub">prueba con otro término o añade una paleta nueva.</p></div>`;
+    grid.innerHTML = `<div class="empty-state"><p class="empty-big">no results</p><p class="empty-sub">try a different search term or add a new palette.</p></div>`;
     return;
   }
 
-  grid.innerHTML = list.map(p => `
-    <div class="palette-card">
+  grid.innerHTML = list.map(p => {
+    const isActive = p.active !== false;
+    const d = new Date(p.created || Date.now());
+    const dateStr = d.toLocaleString('es', {month:'short', year:'numeric'});
+    return `
+    <div class="palette-card${isActive ? '' : ' inactive'}">
       <div class="swatches">
         ${p.colors.map(c=>`<div class="swatch" style="background:${c}" data-hex="${c}"><span class="swatch-tip">${c}</span></div>`).join('')}
       </div>
       <div class="card-body">
-        <div class="card-name">${esc(p.name)}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">
+          <div style="display:flex;align-items:baseline;gap:7px;min-width:0;">
+            <div class="card-name">${esc(p.name)}</div>
+            <span class="card-date">${dateStr}</span>
+          </div>
+          <label class="toggle" title="${isActive ? 'Activa' : 'Inactiva'}">
+            <input type="checkbox" ${isActive ? 'checked' : ''} data-toggle="${p.id}">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
         ${p.tags?.length ? `<div class="card-tags">${p.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
       </div>
       <div class="card-footer">
         <div class="hex-list">${p.colors.map(c=>`<span class="hex-chip" data-hex="${c}" title="copiar">${c}</span>`).join('')}</div>
         <div class="card-actions">
-          <button class="btn-icon" title="copiar todos" data-copyall="${p.id}">⎘</button>
-          <button class="btn-icon" title="editar" data-edit="${p.id}">✎</button>
-          <button class="btn-icon" title="eliminar" data-del="${p.id}">✕</button>
+          <button class="btn-icon" title="copy all" data-copyall="${p.id}">⎘</button>
+          <button class="btn-icon" title="edit" data-edit="${p.id}">✎</button>
+          <button class="btn-icon" title="delete" data-del="${p.id}">✕</button>
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -680,9 +699,9 @@ async function copyText(t) {
       document.execCommand('copy');
       document.body.removeChild(ta);
     }
-    toast('copiado: ' + t);
+    toast('copied: ' + t);
   } catch(e) {
-    toast('error al copiar');
+    toast('copy failed');
   }
 }
 
@@ -698,16 +717,16 @@ function copyAll(id) {
 }
 
 function deletePal(id) {
-  if (!confirm('¿Eliminar esta paleta?')) return;
+  if (!confirm('Delete this palette?')) return;
   pals = pals.filter(p=>p.id!==id);
-  persist(); render(); toast('paleta eliminada');
+  persist(); render(); toast('palette deleted');
 }
 
 function editPal(id) {
   const p = pals.find(x=>x.id===id);
   if (!p) return;
   editId = id;
-  $('modalTitle').textContent = 'editar paleta';
+  $('modalTitle').textContent = 'edit palette';
   $('palName').value = p.name;
   $('palTags').value = (p.tags||[]).join(', ');
   $('palNotes').value = p.notes||'';
@@ -719,7 +738,7 @@ function editPal(id) {
 function openModal(keep) {
   if (!keep) {
     editId = null;
-    $('modalTitle').textContent = 'nueva paleta';
+    $('modalTitle').textContent = 'new palette';
     $('palName').value = '';
     $('palTags').value = '';
     $('palNotes').value = '';
@@ -737,8 +756,8 @@ function addColor() {
   let h = $('hexInput').value.trim();
   if (!h) h = $('picker').value;
   if (!h.startsWith('#')) h = '#'+h;
-  if (!/^#[0-9a-fA-F]{6}$/.test(h)) { toast('hex no válido — ej: #ff5500'); return; }
-  if (tmpColors.length>=10) { toast('máximo 10 colores'); return; }
+  if (!/^#[0-9a-fA-F]{6}$/.test(h)) { toast('invalid hex — e.g. #ff5500'); return; }
+  if (tmpColors.length>=10) { toast('max 10 colors'); return; }
   tmpColors.push(h.toLowerCase());
   $('hexInput').value = '';
   refreshChips();
@@ -772,17 +791,17 @@ function rmColor(i) { tmpColors.splice(i,1); refreshChips(); }
 
 function savePal() {
   const name = $('palName').value.trim();
-  if (!name) { toast('añade un nombre a la paleta'); return; }
-  if (!tmpColors.length) { toast('añade al menos un color'); return; }
+  if (!name) { toast('please add a name'); return; }
+  if (!tmpColors.length) { toast('add at least one color'); return; }
   const tags = $('palTags').value.split(',').map(t=>t.trim()).filter(Boolean);
   const notes = $('palNotes').value.trim();
   if (editId !== null) {
     const i = pals.findIndex(p=>p.id===editId);
     if (i>=0) pals[i] = {...pals[i], name, colors:[...tmpColors], tags, notes};
-    toast('paleta actualizada');
+    toast('palette updated');
   } else {
     pals.unshift({id:Date.now(), name, colors:[...tmpColors], tags, notes, created:Date.now()});
-    toast('paleta guardada');
+    toast('palette saved');
   }
   persist(); closeModal(); render();
 }
@@ -798,6 +817,14 @@ $('search').addEventListener('input', render);
 $('sort').addEventListener('change', render);
 
 document.addEventListener('click', e => {
+  const tog = e.target.closest('input[data-toggle]');
+  if (tog) {
+    const id = Number(tog.dataset.toggle);
+    const p = pals.find(x=>x.id===id);
+    if (p) { p.active = tog.checked; persist(); render(); }
+    return;
+  }
+
   const swatch = e.target.closest('.swatch[data-hex]');
   if (swatch) { copySwatch(swatch.dataset.hex, swatch); return; }
 
