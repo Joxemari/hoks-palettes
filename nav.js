@@ -53,16 +53,16 @@ nav {
 .dropdown li a:hover { color: #111; }
 /* Common footer */
 .site-footer {
-  padding: 1.5rem 2rem;
+  padding: 1.2rem 2rem;
   border-top: 1px solid #e8e8e8;
   display: flex; align-items: center; justify-content: space-between;
   font-family: 'Courier New', Courier, monospace;
-  margin-top: auto;
+  background: #fff;
 }
-.footer-copy { font-size: 10px; color: #aaa; letter-spacing: 0.08em; text-transform: uppercase; }
+.footer-copy { font-size: 10px; color: #ccc; letter-spacing: 0.08em; text-transform: uppercase; }
 .footer-links { display: flex; gap: 1.5rem; }
 .footer-links a {
-  font-size: 10px; color: #aaa; text-decoration: none;
+  font-size: 10px; color: #ccc; text-decoration: none;
   letter-spacing: 0.08em; text-transform: uppercase;
   transition: color 0.15s;
 }
@@ -70,9 +70,9 @@ nav {
 body {
   display: flex; flex-direction: column; min-height: 100vh;
 }
-main, #main-content, .layout, .about-wrap, .work-section {
-  flex: 1;
-}
+/* flex: 1 on the first child after nav so footer always pushes to bottom */
+body > nav + * { flex: 1; }
+body > .layout { flex: 1; }
 `;
 
 const style = document.createElement('style');

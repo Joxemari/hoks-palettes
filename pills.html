@@ -94,13 +94,11 @@ body { font-family: var(--f); background: var(--bg); color: var(--ink); min-heig
 }
 canvas {
   display: block;
-  max-width: min(85vw, 860px);
-  max-height: 76vh;
-  width: 100%; height: auto;
-  aspect-ratio: 1414/1000;
+  height: min(72vh, 580px);
+  width: auto;
+  max-width: calc(100vw - 280px);
   cursor: pointer;
   background: #f5f0ea;
-  /* Thin stroke instead of box shadow */
   outline: 1px solid rgba(0,0,0,0.12);
 }
 .canvas-hint {
@@ -410,11 +408,10 @@ function draw(s) {
   const thickness=maxSize*0.7;
   const numShapes=rng.int(arch.pillMin,arch.pillMax);
   const tol=OVERLAP_TOL[arch.name];
-  ctx.clearRect(0,0,W,H);
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle=OFF_WHITE; ctx.fillRect(0,0,W,H);
 
   let bgTrait='Off-white';
-  // Always fill with off-white first so gallery saves it correctly
-  ctx.fillStyle=OFF_WHITE; ctx.fillRect(0,0,W,H);
   if(rng.bool(0.6)){
     ctx.fillStyle=rng.pickFrom(colors); ctx.fillRect(0,0,W,H); bgTrait='Colored';
   }
