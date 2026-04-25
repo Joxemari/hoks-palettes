@@ -12,8 +12,7 @@ body { background: #fff; color: #111; }
   font-family: 'Courier New', Courier, monospace;
   font-size: clamp(0.9rem, 1.8vw, 1.1rem);
   font-weight: 400; line-height: 1.8; color: #111;
-  margin-bottom: 3rem; letter-spacing: 0.01em;
-  display: block;
+  margin-bottom: 3rem; letter-spacing: 0.01em; display: block;
 }
 .about-contact {
   font-family: 'Courier New', Courier, monospace;
@@ -28,8 +27,19 @@ body { background: #fff; color: #111; }
 <main>
   <div class="about-wrap">
     <p id="about-text">Joxemari Gallastegi is a generative artist based in Spain. His work is characterised by bold form, vibrant colour, and the beauty of controlled randomness — algorithmic systems that make each piece unique by design.</p>
-    <p class="about-contact">Contact: <a href="mailto:joxemgallastegi@gmail.com">joxemgallastegi@gmail.com</a></p>
+    <p class="about-contact" id="about-contact">Contact: <a href="mailto:joxemgallastegi@gmail.com">joxemgallastegi@gmail.com</a></p>
   </div>
 </main>
+<script>
+fetch('https://raw.githubusercontent.com/Joxemari/hoks/main/data/site.json?t=' + Date.now())
+  .then(r => r.ok ? r.json() : null)
+  .then(d => {
+    if (!d) return;
+    const t = document.getElementById('about-text');
+    const c = document.getElementById('about-contact');
+    if (t && d.aboutText) t.textContent = d.aboutText;
+    if (c && d.footerEmail) c.innerHTML = 'Contact: <a href="mailto:' + d.footerEmail + '">' + d.footerEmail + '<\/a>';
+  }).catch(() => {});
+</script>
 </body>
 </html>
