@@ -1,0 +1,655 @@
+[
+  {
+    "id": 1,
+    "name": "Science",
+    "active": true,
+    "colors": [
+      "#ffe819",
+      "#000000"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 1
+  },
+  {
+    "id": 2,
+    "name": "Mondrian",
+    "active": true,
+    "colors": [
+      "#0a0a0a",
+      "#f7f3f2",
+      "#0077e1",
+      "#f5d216",
+      "#fc3503"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 2
+  },
+  {
+    "id": 3,
+    "name": "Paint",
+    "active": true,
+    "colors": [
+      "#b30000",
+      "#e6cf00",
+      "#1283b3",
+      "#fafafa",
+      "#0a0a0a"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 3
+  },
+  {
+    "id": 4,
+    "name": "Morning",
+    "active": true,
+    "colors": [
+      "#ffd919",
+      "#262104",
+      "#fffbe6"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 4
+  },
+  {
+    "id": 5,
+    "name": "Evening",
+    "active": true,
+    "colors": [
+      "#ff4f19",
+      "#15084d",
+      "#5ce6e6"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 5
+  },
+  {
+    "id": 6,
+    "name": "Marble",
+    "active": true,
+    "colors": [
+      "#218ad4",
+      "#76df55",
+      "#0b1435",
+      "#ffffff"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 6
+  },
+  {
+    "id": 7,
+    "name": "Troll",
+    "active": true,
+    "colors": [
+      "#294984",
+      "#6ca0a7",
+      "#ffc789",
+      "#df5f50",
+      "#5a3034",
+      "#fff1dd"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 7
+  },
+  {
+    "id": 8,
+    "name": "Meta",
+    "active": true,
+    "colors": [
+      "#226699",
+      "#dd2e44",
+      "#ffcc4d"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 8
+  },
+  {
+    "id": 9,
+    "name": "Splash",
+    "active": true,
+    "colors": [
+      "#32312e",
+      "#795330",
+      "#c7ae82",
+      "#f5f2e3"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 9
+  },
+  {
+    "id": 10,
+    "name": "Sheets",
+    "active": true,
+    "colors": [
+      "#025760",
+      "#7fd0d3",
+      "#b3ead7",
+      "#eff7f5",
+      "#fae9c1",
+      "#f8ca75",
+      "#e88d44"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 10
+  },
+  {
+    "id": 11,
+    "name": "Her",
+    "active": true,
+    "colors": [
+      "#cd1440",
+      "#fafafa"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 11
+  },
+  {
+    "id": 12,
+    "name": "Fans",
+    "active": true,
+    "colors": [
+      "#000000",
+      "#83a6bc",
+      "#faece1",
+      "#bab1a8"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 12
+  },
+  {
+    "id": 13,
+    "name": "Light",
+    "active": true,
+    "colors": [
+      "#00b2b4",
+      "#fdd35b",
+      "#3b4696",
+      "#f4737d",
+      "#333333"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 13
+  },
+  {
+    "id": 14,
+    "name": "Escape",
+    "active": true,
+    "colors": [
+      "#f3e17e",
+      "#dd483c",
+      "#4b8a5f",
+      "#0d150b",
+      "#faf8e2"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 14
+  },
+  {
+    "id": 15,
+    "name": "Play",
+    "active": true,
+    "colors": [
+      "#e20404",
+      "#fcd202",
+      "#ffffff",
+      "#000000"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 15
+  },
+  {
+    "id": 16,
+    "name": "Repetition",
+    "active": true,
+    "colors": [
+      "#2c2060",
+      "#4bd3e5",
+      "#fffbe6",
+      "#ffd919",
+      "#ff4f19"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 16
+  },
+  {
+    "id": 17,
+    "name": "North",
+    "active": true,
+    "colors": [
+      "#dc060e",
+      "#ffd400",
+      "#0064b0",
+      "#001a5b",
+      "#ffffff"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 17
+  },
+  {
+    "id": 18,
+    "name": "Commit",
+    "active": true,
+    "colors": [
+      "#563d7c",
+      "#0096d8",
+      "#f4e361",
+      "#f24679"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 18
+  },
+  {
+    "id": 19,
+    "name": "Wheel",
+    "active": true,
+    "colors": [
+      "#ffe140",
+      "#ffa922",
+      "#1bc0c6",
+      "#2484ae",
+      "#134e6e"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 19
+  },
+  {
+    "id": 20,
+    "name": "Edit",
+    "active": true,
+    "colors": [
+      "#1c1c1c",
+      "#f47a9d",
+      "#f4ea7a",
+      "#f2f2f2"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 20
+  },
+  {
+    "id": 21,
+    "name": "Optical",
+    "active": true,
+    "colors": [
+      "#f2eb8a",
+      "#fed000",
+      "#fc8405",
+      "#ed361a",
+      "#e2f0f3",
+      "#b3dce0",
+      "#4464a1",
+      "#203051",
+      "#ffc5c7",
+      "#f398c3",
+      "#cf3895",
+      "#6d358a",
+      "#06b4b0",
+      "#4b8a5f"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 21
+  },
+  {
+    "id": 22,
+    "name": "Homage",
+    "active": true,
+    "colors": [
+      "#fef9c6",
+      "#ffcc4d",
+      "#f5b800",
+      "#56a1c4",
+      "#4464a1",
+      "#ee726b",
+      "#df5f50",
+      "#5a3034"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 22
+  },
+  {
+    "id": 23,
+    "name": "Base",
+    "active": true,
+    "colors": [
+      "#f0f0f0",
+      "#8c8c8c",
+      "#0f0f0f",
+      "#0863d3",
+      "#f5d216",
+      "#f43809",
+      "#08b233",
+      "#9913bf"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 23
+  },
+  {
+    "id": 24,
+    "name": "Ten",
+    "active": true,
+    "colors": [
+      "#fffbe6",
+      "#050505",
+      "#abcd5e",
+      "#29ac9f",
+      "#14976b",
+      "#b3dce0",
+      "#62b6de",
+      "#2b67af",
+      "#f589a3",
+      "#ef562f",
+      "#fc8405",
+      "#f9d531"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 24
+  },
+  {
+    "id": 25,
+    "name": "Iris",
+    "active": true,
+    "colors": [
+      "#ebedec",
+      "#71859d",
+      "#f6d448",
+      "#fafafa"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 25
+  },
+  {
+    "id": 26,
+    "name": "Right",
+    "active": true,
+    "colors": [
+      "#4464a1",
+      "#62b6de",
+      "#b3dce0",
+      "#fafafa",
+      "#ffc5c7",
+      "#ee726b",
+      "#cd1440"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 26
+  },
+  {
+    "id": 27,
+    "name": "Slussen",
+    "active": true,
+    "colors": [
+      "#fafafa",
+      "#f398c3",
+      "#f44e24",
+      "#f4d730",
+      "#23b247",
+      "#2a76d3",
+      "#0a0a0a"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 27
+  },
+  {
+    "id": 28,
+    "name": "Poet",
+    "active": true,
+    "colors": [
+      "#f4f3ed",
+      "#efc807",
+      "#ed5d53",
+      "#e2dbb5",
+      "#45291c",
+      "#080b0f"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 28
+  },
+  {
+    "id": 29,
+    "name": "Daily",
+    "active": true,
+    "colors": [
+      "#131314",
+      "#272829",
+      "#ffe18e",
+      "#fff0c6"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 29
+  },
+  {
+    "id": 30,
+    "name": "Podcast",
+    "active": true,
+    "colors": [
+      "#584594",
+      "#e488b7",
+      "#d74c41",
+      "#f0d235",
+      "#36ad63",
+      "#69bcea",
+      "#fdfdfd"
+    ],
+    "tags": [
+      "roni kaufman"
+    ],
+    "notes": "from ronikaufman.github.io/color_pals",
+    "created": 30
+  },
+  {
+    "id": 31,
+    "name": "Itten I — Yellow & Violet",
+    "active": true,
+    "colors": [
+      "#e8b84b",
+      "#9b7fb6",
+      "#7a6b8a",
+      "#c9a227"
+    ],
+    "tags": [
+      "itten",
+      "complementary",
+      "1944"
+    ],
+    "notes": "Complementary contrast after Johannes Itten, designed by Heinrich Kümpel, 1944",
+    "created": 31
+  },
+  {
+    "id": 32,
+    "name": "Itten II — Orange & Blue",
+    "active": true,
+    "colors": [
+      "#e07b39",
+      "#4a7fb5",
+      "#3a6090",
+      "#c96a28"
+    ],
+    "tags": [
+      "itten",
+      "complementary",
+      "1944"
+    ],
+    "notes": "Complementary contrast after Johannes Itten, designed by Heinrich Kümpel, 1944",
+    "created": 32
+  },
+  {
+    "id": 33,
+    "name": "Itten III — Red & Teal",
+    "active": true,
+    "colors": [
+      "#c0392b",
+      "#2a7f6f",
+      "#1a6a5a",
+      "#a93226"
+    ],
+    "tags": [
+      "itten",
+      "complementary",
+      "1944"
+    ],
+    "notes": "Complementary contrast after Johannes Itten, designed by Heinrich Kümpel, 1944",
+    "created": 33
+  },
+  {
+    "id": 34,
+    "name": "Itten IV — Red & Cyan",
+    "active": true,
+    "colors": [
+      "#c0392b",
+      "#2e86ab",
+      "#1a6e8a",
+      "#a93226"
+    ],
+    "tags": [
+      "itten",
+      "complementary",
+      "1944"
+    ],
+    "notes": "Complementary contrast after Johannes Itten, designed by Heinrich Kümpel, 1944",
+    "created": 34
+  },
+  {
+    "id": 35,
+    "name": "Itten V — Purple & Yellow-Green",
+    "active": true,
+    "colors": [
+      "#7b4fa6",
+      "#8ab540",
+      "#6a9a30",
+      "#6a3d8a"
+    ],
+    "tags": [
+      "itten",
+      "complementary",
+      "1944"
+    ],
+    "notes": "Complementary contrast after Johannes Itten, designed by Heinrich Kümpel, 1944",
+    "created": 35
+  },
+  {
+    "id": 36,
+    "name": "Itten VI — Green & Purple",
+    "active": true,
+    "colors": [
+      "#3a8a4a",
+      "#7b4fa6",
+      "#6a3d8a",
+      "#2a7a3a"
+    ],
+    "tags": [
+      "itten",
+      "complementary",
+      "1944"
+    ],
+    "notes": "Complementary contrast after Johannes Itten, designed by Heinrich Kümpel, 1944",
+    "created": 36
+  },
+  {
+    "id": 99,
+    "name": "Memphis",
+    "active": true,
+    "colors": [
+      "#ff6b6b",
+      "#feca57",
+      "#48dbfb",
+      "#ff9ff3",
+      "#54a0ff",
+      "#5f27cd",
+      "#00d2d3",
+      "#ff9f43",
+      "#1dd1a1",
+      "#2e2e2e"
+    ],
+    "tags": [
+      "memphis",
+      "bold"
+    ],
+    "notes": "Memphis design style",
+    "created": 99
+  }
+]
