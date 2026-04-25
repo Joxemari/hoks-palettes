@@ -100,24 +100,33 @@ function drawPills(canvas, colors, seed) {
 }
 
 function loadCanvases() {
-  let gallery = [];
-  try { gallery = JSON.parse(localStorage.getItem(LS_GALLERY)||'[]'); } catch(e) {}
   const canvases = ['c1','c2','c3'];
-  if (gallery.length >= 3) {
-    canvases.forEach((id, i) => {
-      const canvas = document.getElementById(id);
-      const item = gallery[i];
-      const img = new Image();
-      img.onload = () => { canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height); };
-      img.src = item.dataUrl;
-      const cap = document.getElementById(id+'-caption');
-      if (cap) {
-        const d = item.savedAt ? new Date(item.savedAt) : new Date();
-        const dateStr = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-        cap.textContent = 'Pills · #' + item.seed + ' · ' + dateStr;
+  const RAW = 'https://raw.githubusercontent.com/Joxemari/hoks/main/data/';
+
+  fetch(RAW + 'gallery.json?t=' + Date.now())
+    .then(r => r.ok ? r.json() : [])
+    .then(gallery => {
+      if (gallery.length >= 3) {
+        canvases.forEach((id, i) => {
+          const canvas = document.getElementById(id);
+          const item = gallery[i];
+          const img = new Image();
+          img.onload = () => { canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height); };
+          img.src = item.dataUrl;
+          const cap = document.getElementById(id+'-caption');
+          if (cap) {
+            const d = item.savedAt ? new Date(item.savedAt) : new Date();
+            const dateStr = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+            cap.textContent = 'Pills · #' + item.seed + ' · ' + dateStr;
+          }
+        });
+      } else {
+        drawFallbacks();
       }
-    });
-  } else {
+    })
+    .catch(() => drawFallbacks());
+
+  function drawFallbacks() {
     const seeds = [Math.random()*99999|0, Math.random()*99999|0, Math.random()*99999|0];
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
