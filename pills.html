@@ -564,15 +564,16 @@ function exportCard() {
   const RT={common:'#999',uncommon:'#085041',rare:'#0c447c',superrare:'#3c3489',legendary:'#633806'};
   const rKey=s=>(s||'common').toLowerCase().replace(' ','');
 
-  // Layout: full-width artwork + traits strip below
   const artW = src.width * SC;
   const artH = src.height * SC;
-  const pad = 22*SC;
-  const rowH = 28*SC;
-  const headerH = 52*SC;
-  const dividerH = SC;
-  const traitRows = traits.length + 1; // +1 for overall
-  const stripH = headerH + dividerH + traitRows*rowH + pad*1.5;
+  const stripH = Math.round(artH * 0.22);
+  const pad = Math.round(artW * 0.025);
+  const headerH = Math.round(stripH * 0.32);
+  const rowH = Math.round((stripH - headerH) / (traits.length + 2));
+  const dividerH = Math.max(1, Math.round(artH * 0.001));
+  const fs = Math.round(artW * 0.0075);
+  const fsSm = Math.round(fs * 0.78);
+  const fsBadge = Math.round(fs * 0.7);
   const CW = artW;
   const CH = artH + stripH;
 
