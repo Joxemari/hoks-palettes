@@ -373,7 +373,7 @@
   {
     "id": 23,
     "name": "Base",
-    "active": true,
+    "active": false,
     "colors": [
       "#f0f0f0",
       "#8c8c8c",
@@ -393,7 +393,7 @@
   {
     "id": 24,
     "name": "Ten",
-    "active": true,
+    "active": false,
     "colors": [
       "#fffbe6",
       "#050505",
