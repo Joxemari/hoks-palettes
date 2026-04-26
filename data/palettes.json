@@ -194,7 +194,7 @@
   {
     "id": 13,
     "name": "Light",
-    "active": true,
+    "active": false,
     "colors": [
       "#00b2b4",
       "#fdd35b",
@@ -211,7 +211,7 @@
   {
     "id": 14,
     "name": "Escape",
-    "active": true,
+    "active": false,
     "colors": [
       "#f3e17e",
       "#dd483c",
