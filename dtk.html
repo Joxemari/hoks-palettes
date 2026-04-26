@@ -222,8 +222,16 @@ function draw(seed) {
 
   // Grid — n from 1 to 7 (faithful: floor(random(1,8)))
   const n = rng.int(1, 7);
-  const size = (W - margin*2) / (n * 1.1);
+  // Total grid width = n * size * 1.1 - 0.1*size = size*(n*1.1-0.1)
+  // Solve for size so grid fits: size = available / (n*1.1 - 0.1)
+  const available = W - margin * 2;
+  const size = available / (n * 1.1 - 0.1);
   const threshold = 0.8;
+  // Center the grid
+  const gridW = n * size * 1.1 - 0.1 * size;
+  const gridH = gridW; // square grid
+  const offsetX = (W - gridW) / 2;
+  const offsetY = (H - gridH) / 2;
 
   // Build composition matrix
   const composition = [];
@@ -234,31 +242,23 @@ function draw(seed) {
     }
   }
 
-  // Build list of circles to draw
-  const circlesToDraw = [];
+  // Draw circles — instant
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  let drawn = 0;
   for (let i=0; i<n; i++) {
     for (let j=0; j<n; j++) {
       if (composition[i][j] <= threshold) {
         const x = (i + 0.5) * size * 1.1;
         const y = (j + 0.5) * size * 1.1;
-        circlesToDraw.push({ x, y, color: colors[rng.int(0, colors.length-1)] });
+        ctx.fillStyle = colors[rng.int(0, colors.length-1)];
+        ctx.beginPath();
+        ctx.arc(x, y, size/2, 0, Math.PI*2);
+        ctx.fill();
+        drawn++;
       }
     }
   }
-  let drawn = circlesToDraw.length;
-
-  // Progressive draw with delay between each circle
-  const stepDelay = Math.max(40, Math.min(300, 1200 / Math.max(1, circlesToDraw.length)));
-  ctx.save();
-  ctx.translate(margin, margin);
-  circlesToDraw.forEach((circle, idx) => {
-    setTimeout(() => {
-      ctx.fillStyle = circle.color;
-      ctx.beginPath();
-      ctx.arc(circle.x, circle.y, size/2, 0, Math.PI*2);
-      ctx.fill();
-    }, idx * stepDelay);
-  });
   ctx.restore();
 
   // Traits
@@ -288,7 +288,6 @@ function draw(seed) {
       </span>
     </div>`).join('');
   document.getElementById('overallRarity').innerHTML=`<span class="badge ${RC[overall]}">${RL[overall]}</span>`;
-  animateSeed(seed);
   const ts=currentTimestamp,tsEl=document.getElementById('timestampDisplay');
   if(tsEl) tsEl.textContent=ts.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+ts.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
@@ -392,7 +391,9 @@ function scrambleAndDraw(seed, drawFn) {
   }
 }
 
-function animateSeed(seed) { scrambleAndDraw(seed, () => {}); }
+function animateSeed(seed) {
+  scrambleAndDraw(seed, () => {});
+}
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 

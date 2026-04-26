@@ -298,12 +298,11 @@ function updateTraits(pal, drawnCount, totalCount, depthLevel, seed) {
       </span>
     </div>`).join('');
   document.getElementById('overallRarity').innerHTML=`<span class="badge ${RC[overall]}">${RL[overall]}</span>`;
-  animateSeed(seed);
   const ts=currentTimestamp,tsEl=document.getElementById('timestampDisplay');
   if(tsEl)tsEl.textContent=ts.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+ts.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
 
-function generate(){if(_generating)return;currentSeed=(Math.random()*0xFFFFFFFF)>>>0;currentTimestamp=new Date();draw(currentSeed);}
+function generate(){if(_generating)return;currentSeed=(Math.random()*0xFFFFFFFF)>>>0;currentTimestamp=new Date();scrambleAndDraw(currentSeed,()=>draw(currentSeed));}
 
 function loadGallery(){fetch(RAW+'krrtk.json?t='+Date.now()).then(r=>r.ok?r.json():[]).then(data=>{gallery=data;renderGallery();}).catch(()=>{gallery=[];renderGallery();});}
 async function saveGallery(){await ghPush('data/krrtk.json',gallery);}
@@ -396,7 +395,9 @@ function scrambleAndDraw(seed, drawFn) {
   }
 }
 
-function animateSeed(seed) { scrambleAndDraw(seed, () => {}); }
+function animateSeed(seed) {
+  scrambleAndDraw(seed, () => {});
+}
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
