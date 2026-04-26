@@ -62,6 +62,16 @@ canvas { display: block; height: min(72vh, 600px); width: min(72vh, 600px); curs
       <button class="btn btn-outline" id="batchBtn" onclick="saveToBatch()" style="display:none">+ Save to Batch</button>
       <button class="btn btn-outline" onclick="downloadHD()">↓ Download PNG</button>
     </div>
+
+    <div class="sidebar-section" id="paletteSelectorSection" style="display:none">
+      <div class="sidebar-label" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Palette</span>
+        <button id="palLockBtn" onclick="togglePaletteLock()" title="Lock palette" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ink3);padding:0;line-height:1;transition:color 0.15s;">🔓</button>
+      </div>
+      <select id="palSelectDropdown" class="palette-select" onchange="onManualPalChange()" style="display:none;font-family:var(--f);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;color:var(--ink);outline:none;cursor:pointer;width:100%;">
+      </select>
+      <div class="pal-preview" id="palSelectorPreview" style="display:none;display:flex;height:8px;border-radius:2px;overflow:hidden;border:1px solid var(--border);"></div>
+    </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Seed</div>
       <div class="seed-display" id="seedDisplay">—</div>
@@ -216,7 +226,7 @@ function draw(seed) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const rng = new Rng(seed);
-  const pal = rng.weighted(palettes);
+  const pal = getActivePalette(rng);
   const colors = pal.colors;
   const threshold = 0.6;
   const margin = Math.round(W * 0.1667);
@@ -397,6 +407,60 @@ function scrambleAndDraw(seed, drawFn) {
 
 function animateSeed(seed) {
   scrambleAndDraw(seed, () => {});
+}
+
+
+// ── PALETTE LOCK (admin only) ──────────────────────────
+let _paletteLocked = false;
+let _lockedPalIdx = 0;
+let _isAdminSession = false;
+
+function checkAdminSession() {
+  _isAdminSession = sessionStorage.getItem('hoks-admin-session') === '1';
+  if (_isAdminSession) {
+    const sec = document.getElementById('paletteSelectorSection');
+    if (sec) sec.style.display = '';
+    buildPalDropdown();
+  }
+}
+
+function buildPalDropdown() {
+  const sel = document.getElementById('palSelectDropdown');
+  if (!sel || !palettes.length) return;
+  sel.innerHTML = palettes.map((p,i) => `<option value="${i}">${p.name}</option>`).join('');
+  sel.value = _lockedPalIdx;
+  updatePalPreviewBar();
+}
+
+function togglePaletteLock() {
+  _paletteLocked = !_paletteLocked;
+  const btn = document.getElementById('palLockBtn');
+  const sel = document.getElementById('palSelectDropdown');
+  const prev = document.getElementById('palSelectorPreview');
+  if (btn) btn.textContent = _paletteLocked ? '🔒' : '🔓';
+  if (sel) sel.style.display = _paletteLocked ? '' : 'none';
+  if (prev) prev.style.display = _paletteLocked ? '' : 'none';
+  if (_paletteLocked) buildPalDropdown();
+}
+
+function onManualPalChange() {
+  const sel = document.getElementById('palSelectDropdown');
+  if (sel) _lockedPalIdx = parseInt(sel.value);
+  updatePalPreviewBar();
+}
+
+function updatePalPreviewBar() {
+  const prev = document.getElementById('palSelectorPreview');
+  if (!prev || !palettes[_lockedPalIdx]) return;
+  prev.innerHTML = palettes[_lockedPalIdx].colors.map(c =>
+    `<span style="flex:1;background:${c}"></span>`).join('');
+}
+
+function getActivePalette(rng) {
+  if (_paletteLocked && palettes[_lockedPalIdx]) {
+    return palettes[_lockedPalIdx];
+  }
+  return rng ? rng.weighted(palettes) : palettes[Math.floor(Math.random()*palettes.length)];
 }
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}

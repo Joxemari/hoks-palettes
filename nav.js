@@ -65,7 +65,7 @@ if (!document.querySelector('link[rel="icon"]')) {
 }
 
 const path = window.location.pathname.split('/').pop() || 'index.html';
-const isWork = ['index.html','','pills.html','krrtk.html','dtk.html','bzrs.html','krrtkg.html'].includes(path);
+const isWork = ['index.html','','pills.html','krrtk.html','dtk.html','bzrs.html','krrtkg.html','dtkg.html'].includes(path);
 const isAbout = path === 'about.html';
 const isPalettes = path === 'palettes.html';
 
@@ -84,6 +84,7 @@ nav.innerHTML = `
         <li><a href="dtk.html"${path==='dtk.html'?' class="active"':''}>DTK</a></li>
         <li><a href="bzrs.html"${path==='bzrs.html'?' class="active"':''}>BZRS</a></li>
         <li><a href="krrtkg.html"${path==='krrtkg.html'?' class="active"':''}>KRRTKG</a></li>
+        <li><a href="dtkg.html"${path==='dtkg.html'?' class="active"':''}>DTKG</a></li>
       </ul>
     </li>
     <li><a href="about.html"${isAbout?' class="active"':''}>About</a></li>
