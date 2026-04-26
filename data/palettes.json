@@ -452,7 +452,7 @@
   {
     "id": 27,
     "name": "Slussen",
-    "active": true,
+    "active": false,
     "colors": [
       "#fafafa",
       "#f398c3",
@@ -505,7 +505,7 @@
   {
     "id": 30,
     "name": "Podcast",
-    "active": true,
+    "active": false,
     "colors": [
       "#584594",
       "#e488b7",
