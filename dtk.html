@@ -234,23 +234,31 @@ function draw(seed) {
     }
   }
 
-  // Draw circles
-  ctx.save();
-  ctx.translate(margin, margin);
-  let drawn = 0;
+  // Build list of circles to draw
+  const circlesToDraw = [];
   for (let i=0; i<n; i++) {
     for (let j=0; j<n; j++) {
       if (composition[i][j] <= threshold) {
         const x = (i + 0.5) * size * 1.1;
         const y = (j + 0.5) * size * 1.1;
-        ctx.fillStyle = colors[rng.int(0, colors.length-1)];
-        ctx.beginPath();
-        ctx.arc(x, y, size/2, 0, Math.PI*2);
-        ctx.fill();
-        drawn++;
+        circlesToDraw.push({ x, y, color: colors[rng.int(0, colors.length-1)] });
       }
     }
   }
+  let drawn = circlesToDraw.length;
+
+  // Progressive draw with delay between each circle
+  const stepDelay = Math.max(40, Math.min(300, 1200 / Math.max(1, circlesToDraw.length)));
+  ctx.save();
+  ctx.translate(margin, margin);
+  circlesToDraw.forEach((circle, idx) => {
+    setTimeout(() => {
+      ctx.fillStyle = circle.color;
+      ctx.beginPath();
+      ctx.arc(circle.x, circle.y, size/2, 0, Math.PI*2);
+      ctx.fill();
+    }, idx * stepDelay);
+  });
   ctx.restore();
 
   // Traits
@@ -359,11 +367,12 @@ function animateSeed(targetSeed) {
   if (!el) return;
   const target = String(targetSeed);
   const chars = '0123456789';
-  const steps = 20;
-  const duration = 700;
+  const steps = 22;
+  const duration = 800;
   const interval = duration / steps;
   let step = 0;
-  const timer = setInterval(() => {
+  if (el._scrambleTimer) clearInterval(el._scrambleTimer);
+  el._scrambleTimer = setInterval(() => {
     step++;
     const resolved = Math.floor((step / steps) * target.length);
     let display = '#';
@@ -371,7 +380,10 @@ function animateSeed(targetSeed) {
       display += i < resolved ? target[i] : chars[Math.floor(Math.random() * 10)];
     }
     el.textContent = display;
-    if (step >= steps) { clearInterval(timer); el.textContent = '#' + target; }
+    if (step >= steps) {
+      clearInterval(el._scrambleTimer);
+      el.textContent = '#' + target;
+    }
   }, interval);
 }
 

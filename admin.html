@@ -207,6 +207,13 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
         </div>
         <div class="gallery-grid" id="gallery-bzrs-grid"></div>
       </div>
+      <div style="margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border)">
+        <div class="section-header">
+          <span class="section-title">KRRTKG Gallery (<span id="gal-krrtkg-count">0</span>)</span>
+          <button class="btn btn-danger" onclick="clearKrrtkgGallery()">Clear All</button>
+        </div>
+        <div class="gallery-grid" id="gallery-krrtkg-grid"></div>
+      </div>
     </div>
 
     <!-- BATCHES -->
@@ -221,6 +228,7 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
               <option value="krrtk">KRRTK</option>
               <option value="dtk">DTK</option>
               <option value="bzrs">BZRS</option>
+              <option value="krrtkg">KRRTKG</option>
             </select>
           </div>
           <div class="batch-field">
@@ -355,14 +363,15 @@ function switchTab(name){
 }
 
 // ── LOAD ──────────────────────────────────────────────
-let pals=[],gallery=[],galleryKrrtk=[],galleryDtk=[],galleryBzrs=[],site={};
+let pals=[],gallery=[],galleryKrrtk=[],galleryDtk=[],galleryBzrs=[],galleryKrrtkg=[],site={};
 async function loadAll(){
-  [pals,gallery,galleryKrrtk,galleryDtk,galleryBzrs,site]=await Promise.all([
+  [pals,gallery,galleryKrrtk,galleryDtk,galleryBzrs,galleryKrrtkg,site]=await Promise.all([
     ghRead('palettes.json').then(d=>d||[]),
     ghRead('plls.json').then(d=>d||[]),
     ghRead('krrtk.json').then(d=>d||[]),
     ghRead('dtk.json').then(d=>d||[]),
     ghRead('bzrs.json').then(d=>d||[]),
+    ghRead('krrtkg.json').then(d=>d||[]),
     ghRead('site.json').then(d=>d||{}),
   ]);
   renderPalettes();renderGallery();renderBatches();loadSiteForm();
@@ -441,6 +450,14 @@ async function clearAllGallery(){if(!confirm('Clear all Pills gallery?'))return;
 async function clearKrrtkGallery(){if(!confirm('Clear all KRRTK gallery?'))return;galleryKrrtk=[];await ghFetch('data/krrtk.json',[],'clear krrtk gallery');renderGallery();toast('Cleared');}
 async function deleteDtkItem(i){if(!confirm('Delete?'))return;galleryDtk.splice(i,1);await ghFetch('data/dtk.json',galleryDtk,'delete dtk item');renderGallery();toast('Deleted');}
 async function clearDtkGallery(){if(!confirm('Clear all DTK gallery?'))return;galleryDtk=[];await ghFetch('data/dtk.json',[],'clear dtk gallery');renderGallery();toast('Cleared');}
+  $('gal-krrtkg-count').textContent=galleryKrrtkg.length;
+  const kggrid=$('gallery-krrtkg-grid');
+  if(!galleryKrrtkg.length){kggrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
+  else kggrid.innerHTML=galleryKrrtkg.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('krrtkg',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteKrrtkgItem(${i})">✕</button></div></div></div>`).join('');
+
+async function deleteKrrtkgItem(i){if(!confirm('Delete?'))return;galleryKrrtkg.splice(i,1);await ghFetch('data/krrtkg.json',galleryKrrtkg,'delete krrtkg item');renderGallery();toast('Deleted');}
+async function clearKrrtkgGallery(){if(!confirm('Clear all KRRTKG gallery?'))return;galleryKrrtkg=[];await ghFetch('data/krrtkg.json',[],'clear krrtkg gallery');renderGallery();toast('Cleared');}
+
 async function deleteBzrsItem(i){if(!confirm('Delete?'))return;galleryBzrs.splice(i,1);await ghFetch('data/bzrs.json',galleryBzrs,'delete bzrs item');renderGallery();toast('Deleted');}
 async function clearBzrsGallery(){if(!confirm('Clear all BZRS gallery?'))return;galleryBzrs=[];await ghFetch('data/bzrs.json',[],'clear bzrs gallery');renderGallery();toast('Cleared');}
 
@@ -455,7 +472,7 @@ function addGalleryToBatch(work, idx) {
   const active = getActiveBatch();
   if (!active) { toast('No active batch — create one first'); return; }
   if (active.work !== work) { toast(`Active batch is for ${active.work.toUpperCase()}, not ${work.toUpperCase()}`); return; }
-  const srcMap = {pills: gallery, krrtk: galleryKrrtk, dtk: galleryDtk, bzrs: galleryBzrs};
+  const srcMap = {pills: gallery, krrtk: galleryKrrtk, dtk: galleryDtk, bzrs: galleryBzrs, krrtkg: galleryKrrtkg};
   const item = (srcMap[work]||[])[idx];
   if (!item) return;
   active.items.push({seed: item.seed, dataUrl: item.dataUrl, savedAt: item.savedAt || Date.now()});
