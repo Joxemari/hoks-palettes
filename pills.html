@@ -458,8 +458,8 @@ function renderGallery() {
 function downloadHD() {
   const src=document.getElementById('c');
   const hd=document.createElement('canvas');
-  hd.width=src.width*4;hd.height=src.height*4;
-  const ctx=hd.getContext('2d');ctx.scale(4,4);ctx.drawImage(src,0,0);
+  hd.width=src.width*5;hd.height=src.height*5;
+  const ctx=hd.getContext('2d');ctx.scale(5,5);ctx.drawImage(src,0,0);
   const a=document.createElement('a');
   a.download=`pills_${currentSeed}.png`;a.href=hd.toDataURL('image/png');a.click();
   toast('PNG downloaded');
@@ -532,28 +532,6 @@ function exportCard() {
 }
 
 
-// ── SEED SCRAMBLE ANIMATION ───────────────────────────
-function animateSeed(targetSeed) {
-  const el = document.getElementById('seedDisplay');
-  if (!el) return;
-  const target = String(targetSeed);
-  const chars = '0123456789';
-  const duration = 600; // ms
-  const steps = 18;
-  const interval = duration / steps;
-  let step = 0;
-  const timer = setInterval(() => {
-    step++;
-    const progress = step / steps;
-    // Resolve digits from left to right
-    const resolved = Math.floor(progress * target.length);
-    let display = '#';
-    for (let i = 0; i < target.length; i++) {
-      if (i < resolved) {
-        display += target[i];
-      } else {
-        display += chars[Math.floor(Math.random() * chars.length)];
-      }
     }
     el.textContent = display;
     if (step >= steps) {
@@ -563,6 +541,28 @@ function animateSeed(targetSeed) {
   }, interval);
 }
 
+
+// ── SEED SCRAMBLE ─────────────────────────────────────
+function animateSeed(targetSeed) {
+  const el = document.getElementById('seedDisplay');
+  if (!el) return;
+  const target = String(targetSeed);
+  const chars = '0123456789';
+  const steps = 20;
+  const duration = 700;
+  const interval = duration / steps;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    const resolved = Math.floor((step / steps) * target.length);
+    let display = '#';
+    for (let i = 0; i < target.length; i++) {
+      display += i < resolved ? target[i] : chars[Math.floor(Math.random() * 10)];
+    }
+    el.textContent = display;
+    if (step >= steps) { clearInterval(timer); el.textContent = '#' + target; }
+  }, interval);
+}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
 // ── BATCH ─────────────────────────────────────────────

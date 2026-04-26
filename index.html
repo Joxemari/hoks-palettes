@@ -12,34 +12,27 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #fff; color: #111; }
-.work-section {
-  margin-top: 52px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-}
+.work-section { margin-top: 52px; }
 .work-item {
-  position: relative; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  background: #fff; padding: 2.5rem;
-  border-right: 1px solid #f0f0f0;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  padding: 4rem 2rem; min-height: 70vh;
   border-bottom: 1px solid #f0f0f0;
-  min-height: 60vh;
 }
-.work-item:nth-child(even) { border-right: none; }
-.work-item-inner { display: flex; flex-direction: column; align-items: flex-end; width: 100%; }
+.work-item-inner { display: flex; flex-direction: column; align-items: flex-end; }
 .work-item canvas {
   display: block;
-  width: 100%; height: auto;
-  max-height: 55vh;
-  object-fit: contain;
+  /* All works: 50% of viewport width, aspect ratio preserved */
+  width: 50vw;
+  height: auto;
   outline: 1px solid rgba(0,0,0,0.07);
   background: #f5f0ea;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 .work-item canvas.square {
-  max-height: 45vw;
-  width: min(100%, 45vw);
-  height: min(100%, 45vw);
+  width: 50vw;
+  height: 50vw; /* square aspect ratio */
 }
 .work-item-caption {
   font-family: 'Courier New', Courier, monospace;
@@ -112,26 +105,15 @@ function loadCanvases() {
     fetch(RAW+'dtk.json?t='+Date.now()).then(r=>r.ok?r.json():[]).catch(()=>[]),
   ]).then(([pills, krrtk, dtk]) => {
     const works = [];
-
-    // Show up to 2 from each type, filling to 6 total
     pills.slice(0,2).forEach((item,i) => works.push({type:'pills',item,idx:i}));
     krrtk.slice(0,2).forEach((item,i) => works.push({type:'krrtk',item,idx:i}));
     dtk.slice(0,2).forEach((item,i) => works.push({type:'dtk',item,idx:i}));
-
-    // Fill remaining slots from whichever has more
-    if (works.length < 6) {
-      const remaining = 6 - works.length;
-      const extras = [
-        ...pills.slice(2, 2+remaining).map((item,i) => ({type:'pills',item,idx:i+2})),
-        ...krrtk.slice(2, 2+remaining).map((item,i) => ({type:'krrtk',item,idx:i+2})),
-        ...dtk.slice(2, 2+remaining).map((item,i) => ({type:'dtk',item,idx:i+2})),
-      ].slice(0, remaining);
-      works.push(...extras);
+    if (works.length < 4) {
+      pills.slice(2,4).forEach((item,i) => works.push({type:'pills',item,idx:i+2}));
     }
 
     if (!works.length) {
-      // Pure fallback — 6 generated pills
-      for (let i=0;i<6;i++) {
+      for (let i=0;i<3;i++) {
         const seed=(Math.random()*99999)|0;
         const canvas=document.createElement('canvas'); canvas.width=1414; canvas.height=1000;
         drawPillsFallback(canvas, FALLBACK_PALS[i%FALLBACK_PALS.length], seed);
@@ -143,6 +125,7 @@ function loadCanvases() {
 
     works.forEach(({type,item,idx}) => {
       const isSquare = type === 'krrtk' || type === 'dtk';
+      // Use native canvas resolution — CSS handles display size
       const W = isSquare ? 600 : 1414;
       const H = isSquare ? 600 : 1000;
       const canvas = document.createElement('canvas');

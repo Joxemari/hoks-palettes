@@ -311,7 +311,7 @@ async function saveToGallery(){const src=document.getElementById('c');const data
 function loadExactIteration(item){const canvas=document.getElementById('c');const ctx=canvas.getContext('2d');const img=new Image();img.onload=()=>{ctx.globalCompositeOperation='source-over';ctx.drawImage(img,0,0,canvas.width,canvas.height);};img.src=item.dataUrl;currentSeed=item.seed;currentTimestamp=item.savedAt?new Date(item.savedAt):new Date();document.getElementById('seedDisplay').textContent='#'+item.seed;const tsEl=document.getElementById('timestampDisplay');const ts=currentTimestamp;if(tsEl)tsEl.textContent=ts.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+ts.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});const tl=document.getElementById('traitList');if(tl)tl.innerHTML='<div style="font-size:9px;color:var(--ink3);letter-spacing:0.06em;">Saved iteration — generate a new one to see traits.</div>';const or=document.getElementById('overallRarity');if(or)or.innerHTML='';}
 function renderGallery(){const section=document.getElementById('gallerySection'),grid=document.getElementById('galleryGrid');if(!gallery.length){section.style.display='none';return;}section.style.display='block';grid.innerHTML=gallery.map((item,i)=>`<div class="gallery-thumb" data-i="${i}"><img src="${item.dataUrl}" alt="krrtk ${item.seed}"><div style="display:flex;align-items:center;justify-content:space-between;padding:2px 6px 4px;"><span class="gallery-thumb-seed">#${item.seed}</span></div></div>`).join('');grid.querySelectorAll('.gallery-thumb').forEach(el=>{el.addEventListener('click',()=>{const item=gallery[parseInt(el.dataset.i)];if(item)loadExactIteration(item);});});}
 
-function downloadHD(){const src=document.getElementById('c');const hd=document.createElement('canvas');hd.width=src.width*4;hd.height=src.height*4;const ctx=hd.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.scale(4,4);ctx.drawImage(src,0,0);const a=document.createElement('a');a.download=`krrtk_${currentSeed}.png`;a.href=hd.toDataURL('image/png');a.click();toast('PNG downloaded');}
+function downloadHD(){const src=document.getElementById('c');const hd=document.createElement('canvas');hd.width=src.width*12;hd.height=src.height*12;const ctx=hd.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.scale(12,12);ctx.drawImage(src,0,0);const a=document.createElement('a');a.download=`krrtk_${currentSeed}.png`;a.href=hd.toDataURL('image/png');a.click();toast('PNG downloaded');}
 
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
 
@@ -365,28 +365,6 @@ function exportCard(){
 }
 
 
-// ── SEED SCRAMBLE ANIMATION ───────────────────────────
-function animateSeed(targetSeed) {
-  const el = document.getElementById('seedDisplay');
-  if (!el) return;
-  const target = String(targetSeed);
-  const chars = '0123456789';
-  const duration = 600; // ms
-  const steps = 18;
-  const interval = duration / steps;
-  let step = 0;
-  const timer = setInterval(() => {
-    step++;
-    const progress = step / steps;
-    // Resolve digits from left to right
-    const resolved = Math.floor(progress * target.length);
-    let display = '#';
-    for (let i = 0; i < target.length; i++) {
-      if (i < resolved) {
-        display += target[i];
-      } else {
-        display += chars[Math.floor(Math.random() * chars.length)];
-      }
     }
     el.textContent = display;
     if (step >= steps) {
@@ -396,6 +374,28 @@ function animateSeed(targetSeed) {
   }, interval);
 }
 
+
+// ── SEED SCRAMBLE ─────────────────────────────────────
+function animateSeed(targetSeed) {
+  const el = document.getElementById('seedDisplay');
+  if (!el) return;
+  const target = String(targetSeed);
+  const chars = '0123456789';
+  const steps = 20;
+  const duration = 700;
+  const interval = duration / steps;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    const resolved = Math.floor((step / steps) * target.length);
+    let display = '#';
+    for (let i = 0; i < target.length; i++) {
+      display += i < resolved ? target[i] : chars[Math.floor(Math.random() * 10)];
+    }
+    el.textContent = display;
+    if (step >= steps) { clearInterval(timer); el.textContent = '#' + target; }
+  }, interval);
+}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
 function checkBatchButton(){try{const active=JSON.parse(localStorage.getItem('hoks-active-batch')||'null');const btn=document.getElementById('batchBtn');if(btn){if(active&&active.work==='krrtk'){btn.style.display='';btn.textContent=`+ Save to Batch "${active.name}" (${active.items.length})`;}else btn.style.display='none';}}catch(e){}}
