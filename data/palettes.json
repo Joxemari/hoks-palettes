@@ -612,24 +612,6 @@
     "created": 35
   },
   {
-    "id": 36,
-    "name": "Itten VI — Green & Purple",
-    "active": true,
-    "colors": [
-      "#3a8a4a",
-      "#7b4fa6",
-      "#6a3d8a",
-      "#2a7a3a"
-    ],
-    "tags": [
-      "itten",
-      "complementary",
-      "1944"
-    ],
-    "notes": "Complementary contrast after Johannes Itten, designed by Heinrich Kümpel, 1944",
-    "created": 36
-  },
-  {
     "id": 99,
     "name": "Memphis",
     "active": true,
