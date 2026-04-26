@@ -294,7 +294,7 @@
   {
     "id": 19,
     "name": "Wheel",
-    "active": true,
+    "active": false,
     "colors": [
       "#ffe140",
       "#ffa922",
@@ -311,7 +311,7 @@
   {
     "id": 20,
     "name": "Edit",
-    "active": true,
+    "active": false,
     "colors": [
       "#1c1c1c",
       "#f47a9d",
