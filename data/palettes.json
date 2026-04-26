@@ -578,7 +578,7 @@
   {
     "id": 34,
     "name": "Itten IV — Red & Cyan",
-    "active": false,
+    "active": true,
     "colors": [
       "#c0392b",
       "#2e86ab",
