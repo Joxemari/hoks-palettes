@@ -324,10 +324,10 @@ function exportCard(){
   const RT2={common:'#999',uncommon:'#085041',rare:'#0c447c',superrare:'#3c3489',legendary:'#633806'};
   const rKey=s=>(s||'common').toLowerCase().replace(' ','');
   const artW=src.width*SC,artH=src.height*SC;
-  const stripH=Math.round(artH*0.22),pad=Math.round(artW*0.025);
+  const stripH=Math.round(artH*0.32),pad=Math.round(artW*0.025);
   const headerH=Math.round(stripH*0.32),rowH=Math.round((stripH-headerH)/(traits.length+2));
   const divH=Math.max(1,Math.round(artH*0.001));
-  const fs=Math.round(artW*0.0085),fsSm=Math.round(fs*0.78),fsBadge=Math.round(fs*0.7);
+  const fs=Math.round(artW*0.0095),fsSm=Math.round(fs*0.78),fsBadge=Math.round(fs*0.7);
   const card=document.createElement('canvas');card.width=artW;card.height=artH+stripH;
   const ctx=card.getContext('2d');
   ctx.drawImage(src,0,0,artW,artH);
@@ -365,16 +365,6 @@ function exportCard(){
 }
 
 
-    }
-    el.textContent = display;
-    if (step >= steps) {
-      clearInterval(timer);
-      el.textContent = '#' + target;
-    }
-  }, interval);
-}
-
-
 // ── SEED SCRAMBLE ─────────────────────────────────────
 function animateSeed(targetSeed) {
   const el = document.getElementById('seedDisplay');
@@ -396,6 +386,7 @@ function animateSeed(targetSeed) {
     if (step >= steps) { clearInterval(timer); el.textContent = '#' + target; }
   }, interval);
 }
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
 function checkBatchButton(){try{const active=JSON.parse(localStorage.getItem('hoks-active-batch')||'null');const btn=document.getElementById('batchBtn');if(btn){if(active&&active.work==='krrtk'){btn.style.display='';btn.textContent=`+ Save to Batch "${active.name}" (${active.items.length})`;}else btn.style.display='none';}}catch(e){}}

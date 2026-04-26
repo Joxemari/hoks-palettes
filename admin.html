@@ -450,6 +450,20 @@ function saveBatches(b){localStorage.setItem(BATCH_KEY,JSON.stringify(b));}
 function getActiveBatch(){try{return JSON.parse(localStorage.getItem(ACTIVE_BATCH_KEY)||'null');}catch(e){return null;}}
 function setActiveBatch(b){if(b)localStorage.setItem(ACTIVE_BATCH_KEY,JSON.stringify(b));else localStorage.removeItem(ACTIVE_BATCH_KEY);}
 
+
+function addGalleryToBatch(work, idx) {
+  const active = getActiveBatch();
+  if (!active) { toast('No active batch — create one first'); return; }
+  if (active.work !== work) { toast(`Active batch is for ${active.work.toUpperCase()}, not ${work.toUpperCase()}`); return; }
+  const srcMap = {pills: gallery, krrtk: galleryKrrtk, dtk: galleryDtk, bzrs: galleryBzrs};
+  const item = (srcMap[work]||[])[idx];
+  if (!item) return;
+  active.items.push({seed: item.seed, dataUrl: item.dataUrl, savedAt: item.savedAt || Date.now()});
+  setActiveBatch(active);
+  renderBatches();
+  toast(`Added #${item.seed} to batch "${active.name}"`);
+}
+
 function createBatch(){
   const name=$('batch-name').value.trim();if(!name){toast('Add a batch name');return;}
   const work=$('batch-work').value;

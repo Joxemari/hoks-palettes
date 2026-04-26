@@ -531,16 +531,12 @@ function exportCard() {
   },'image/png');
 }
 
-
-    }
     el.textContent = display;
     if (step >= steps) {
       clearInterval(timer);
       el.textContent = '#' + target;
-    }
-  }, interval);
-}
 
+  }, interval);
 
 // ── SEED SCRAMBLE ─────────────────────────────────────
 function animateSeed(targetSeed) {
@@ -563,6 +559,7 @@ function animateSeed(targetSeed) {
     if (step >= steps) { clearInterval(timer); el.textContent = '#' + target; }
   }, interval);
 }
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 
 // ── BATCH ─────────────────────────────────────────────
