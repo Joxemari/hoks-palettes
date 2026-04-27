@@ -392,12 +392,110 @@ async function ghRead(path){const r=await fetch(RAW_BASE+path+'?t='+Date.now());
 function showSaving(v){$('saving').classList.toggle('show',v);}
 
 
+// ── WORKS ─────────────────────────────────────────────────────────────────
+
 async function loadWorks() {
+  try { works = await ghRead('works.json') || []; } catch(e) { works = []; }
+  renderWorks();
+}
+
+async function saveWorks() {
+  await ghFetch('data/works.json', works, 'update works');
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderWorks() {
+  const el = $('works-count');
+  if (el) el.textContent = works.length;
+  const list = $('works-list');
+  if (!list) return;
+  if (!works.length) {
+    list.innerHTML = '<div style="color:var(--ink3);font-size:10px;letter-spacing:0.06em;padding:1rem 0;">No work families yet. Click + Add Family.</div>';
+    return;
+  }
+  list.innerHTML = works.map((w,i) => `
+    <div class="work-card">
+      <div class="work-card-header">
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;">${esc(w.name)} <span style="font-size:9px;color:var(--ink3);font-weight:400;">${esc(w.slug)}</span></div>
+          <div style="font-size:9px;color:var(--ink3);margin-top:2px;">${esc(w.canvas||'')} &middot; ${esc(w.page||'')}</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;">
+          <input type="checkbox" ${w.active?'checked':''} onchange="toggleWork(${i},this.checked)"> Active
+        </label>
+        <a href="${esc(w.page||w.slug+'.html')}" target="_blank" style="font-family:var(--f);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);text-decoration:none;border:1px solid var(--border-dark);border-radius:2px;padding:5px 10px;">&#8599; Open</a>
+        <button onclick="deleteWork(${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:14px;padding:0 4px;" title="Delete">&times;</button>
+      </div>
+      <div class="work-card-body">
+        <div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Description</span>
+          <button onclick="saveWorkDesc(${i})" class="btn-preview">Save</button>
+        </div>
+        <textarea id="desc-${i}" class="code-editor" style="min-height:52px;background:var(--surface);color:var(--ink);border-color:var(--border);" placeholder="Describe this work...">${esc(w.description||'')}</textarea>
+        <div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-top:12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Draw Code (JS)</span>
+          <div style="display:flex;gap:6px;">
+            <button onclick="previewWork(${i})" class="btn-preview">&#9654; Preview</button>
+            <button onclick="saveWorkCode(${i})" class="btn-preview">Save Code</button>
+          </div>
+        </div>
+        <textarea id="code-${i}" class="code-editor" spellcheck="false" placeholder="// Paste your draw() function body here...">${esc(w.drawCode||'')}</textarea>
+        <div id="preview-wrap-${i}" style="display:none;margin-top:8px;">
+          <div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Preview</div>
+          <canvas id="preview-canvas-${i}" width="300" height="300" style="border:1px solid var(--border);border-radius:2px;display:block;"></canvas>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function toggleWork(i, val) {
+  works[i].active = val;
+  await saveWorks();
+  toast(works[i].name + (val ? ' activated' : ' deactivated'));
+}
+async function deleteWork(i) {
+  if (!confirm('Delete ' + works[i].name + '?')) return;
+  works.splice(i, 1);
+  await saveWorks();
+  renderWorks();
+  toast('Deleted');
+}
+async function saveWorkDesc(i) {
+  works[i].description = $('desc-'+i).value.trim();
+  await saveWorks();
+  toast('Description saved');
+}
+async function saveWorkCode(i) {
+  works[i].drawCode = $('code-'+i).value;
+  await saveWorks();
+  toast('Code saved ✓');
+}
+function previewWork(i) {
+  const code = $('code-'+i).value.trim();
+  const wrap = $('preview-wrap-'+i);
+  const canvas = $('preview-canvas-'+i);
+  if (!code) { toast('No code to preview'); return; }
+  wrap.style.display = 'block';
   try {
-    const data = await ghRead('works.json');
-    works = data || [];
-  } catch(e) { works = []; }
-  if (typeof renderWorks === 'function') renderWorks();
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 300, 300);
+    const palColors = (pals && pals.length) ? pals.find(p=>p.active!==false)?.colors || ['#4464a1','#ee726b','#fef9c6'] : ['#4464a1','#ee726b','#fef9c6'];
+    const seed = (Math.random()*0xFFFFFFFF)>>>0;
+    class Rng{constructor(s){this.s=(s|0)>>>0;}next(){this.s=((Math.imul(1664525,this.s)+1013904223)>>>0);return this.s/4294967296;}int(a,b){return Math.floor(a+this.next()*(b-a+1));}}
+    const fn = new Function('ctx','canvas','W','H','seed','colors','Rng', code);
+    fn(ctx, canvas, 300, 300, seed, palColors, Rng);
+    toast('Preview rendered');
+  } catch(e) { toast('Error: '+e.message); console.error(e); }
+}
+function openAddWorkModal() {
+  const name = prompt('Family name (e.g. BZRSG):'); if (!name) return;
+  const slug = prompt('Slug (e.g. bzrsg):'); if (!slug) return;
+  const canvasSize = prompt('Canvas size:', '600x600');
+  works.push({id:slug, name:name.toUpperCase(), slug, active:false, description:'', page:slug+'.html', canvas:canvasSize||'600x600', created:Date.now(), drawCode:''});
+  saveWorks();
+  renderWorks();
+  toast('Family added — paste draw code and activate when ready');
 }
 
 // ── AUTH ──────────────────────────────────────────────
