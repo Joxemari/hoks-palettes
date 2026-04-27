@@ -105,9 +105,6 @@ function loadCanvases() {
 
     works.forEach(({type,item,idx}) => {
       const isSquare = type === 'krrtk' || type === 'dtk' || type === 'bzrs' || type === 'krrtkg' || type === 'dtkg';
-      // Use native canvas resolution — CSS handles display size
-      const W = isSquare ? 600 : 1414;
-      const H = isSquare ? 600 : 1000;
       const img = new Image();
       img.src = item.dataUrl;
       img.style.display = 'block';
@@ -118,7 +115,7 @@ function loadCanvases() {
       const d = item.savedAt ? new Date(item.savedAt) : new Date();
       const dateStr = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
       const label = (type==='krrtk'?'KRRTK':type==='dtk'?'DTK':type==='bzrs'?'BZRS':type==='krrtkg'?'KRRTKG':type==='dtkg'?'DTKG':'PLLS')+' · #'+item.seed+' · '+dateStr;
-      addWorkItem(section, type, canvas, isSquare, label, idx);
+      addWorkItem(section, type, img, isSquare, label, idx);
     });
   });
 }
