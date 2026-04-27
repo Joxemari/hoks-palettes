@@ -489,39 +489,79 @@ async function savePalette(){
 
 // ── GALLERY ───────────────────────────────────────────
 function renderGallery(){
+  // PLLS
   $('gal-count').textContent=gallery.length;
   const grid=$('gallery-grid');
+  if(!grid)return;
   if(!gallery.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
   else grid.innerHTML=gallery.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('pills',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteGalleryItem(${i})">✕</button></div></div></div>`).join('');
+
+  // KRRTK
   $('gal-krrtk-count').textContent=galleryKrrtk.length;
   const kgrid=$('gallery-krrtk-grid');
-  if(!galleryKrrtk.length){kgrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
-  else kgrid.innerHTML=galleryKrrtk.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><button class="gallery-del" onclick="deleteKrrtkItem(${i})">✕</button></div></div>`).join('');
+  if(kgrid){
+    if(!galleryKrrtk.length){kgrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
+    else kgrid.innerHTML=galleryKrrtk.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('krrtk',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteKrrtkItem(${i})">✕</button></div></div></div>`).join('');
+  }
+
+  // DTK
+  const dgrid=$('gallery-dtk-grid');
+  if(dgrid){
+    $('gal-dtk-count').textContent=galleryDtk.length;
+    if(!galleryDtk.length){dgrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
+    else dgrid.innerHTML=galleryDtk.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('dtk',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteDtkItem(${i})">✕</button></div></div></div>`).join('');
+  }
+
+  // BZRS
+  const bgrid=$('gallery-bzrs-grid');
+  if(bgrid){
+    $('gal-bzrs-count').textContent=galleryBzrs.length;
+    if(!galleryBzrs.length){bgrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
+    else bgrid.innerHTML=galleryBzrs.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('bzrs',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteBzrsItem(${i})">✕</button></div></div></div>`).join('');
+  }
+
+  // KRRTKG
+  const kggrid=$('gallery-krrtkg-grid');
+  if(kggrid){
+    $('gal-krrtkg-count').textContent=galleryKrrtkg.length;
+    if(!galleryKrrtkg.length){kggrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
+    else kggrid.innerHTML=galleryKrrtkg.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('krrtkg',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteKrrtkgItem(${i})">✕</button></div></div></div>`).join('');
+  }
+
+  // DTKG
+  const dtgrid=$('gallery-dtkg-grid');
+  if(dtgrid){
+    $('gal-dtkg-count').textContent=galleryDtkg.length;
+    if(!galleryDtkg.length){dtgrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
+    else dtgrid.innerHTML=galleryDtkg.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('dtkg',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteDtkgItem(${i})">✕</button></div></div></div>`).join('');
+  }
 }
+
 async function deleteGalleryItem(i){if(!confirm('Delete?'))return;gallery.splice(i,1);await ghFetch('data/plls.json',gallery,'delete gallery item');renderGallery();toast('Deleted');}
 async function deleteKrrtkItem(i){if(!confirm('Delete?'))return;galleryKrrtk.splice(i,1);await ghFetch('data/krrtk.json',galleryKrrtk,'delete krrtk item');renderGallery();toast('Deleted');}
-async function clearAllGallery(){if(!confirm('Clear all Pills gallery?'))return;gallery=[];await ghFetch('data/plls.json',[],'clear pills gallery');renderGallery();toast('Cleared');}
-async function clearKrrtkGallery(){if(!confirm('Clear all KRRTK gallery?'))return;galleryKrrtk=[];await ghFetch('data/krrtk.json',[],'clear krrtk gallery');renderGallery();toast('Cleared');}
 async function deleteDtkItem(i){if(!confirm('Delete?'))return;galleryDtk.splice(i,1);await ghFetch('data/dtk.json',galleryDtk,'delete dtk item');renderGallery();toast('Deleted');}
-async function clearDtkGallery(){if(!confirm('Clear all DTK gallery?'))return;galleryDtk=[];await ghFetch('data/dtk.json',[],'clear dtk gallery');renderGallery();toast('Cleared');}
-  $('gal-krrtkg-count').textContent=galleryKrrtkg.length;
-  const kggrid=$('gallery-krrtkg-grid');
-  if(!galleryKrrtkg.length){kggrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
-  else kggrid.innerHTML=galleryKrrtkg.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('krrtkg',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteKrrtkgItem(${i})">✕</button></div></div></div>`).join('');
-
-  $('gal-dtkg-count').textContent=galleryDtkg.length;
-  const dtgrid=$('gallery-dtkg-grid');
-  if(!galleryDtkg.length){dtgrid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No saved iterations</div>';}
-  else dtgrid.innerHTML=galleryDtkg.map((item,i)=>`<div class="gallery-item"><img src="${item.dataUrl}" loading="lazy"><div class="gallery-item-footer"><span>#${item.seed}</span><div style="display:flex;gap:4px;"><button title="Add to batch" onclick="addGalleryToBatch('dtkg',${i})" style="background:none;border:none;cursor:pointer;color:var(--ink3);font-size:11px;" onmouseover="this.style.color='#111'" onmouseout="this.style.color=''">+B</button><button class="gallery-del" onclick="deleteDtkgItem(${i})">✕</button></div></div></div>`).join('');
-
-async function deleteDtkgItem(i){if(!confirm('Delete?'))return;galleryDtkg.splice(i,1);await ghFetch('data/dtkg.json',galleryDtkg,'delete dtkg item');renderGallery();toast('Deleted');}
-async function clearDtkgGallery(){if(!confirm('Clear all DTKG gallery?'))return;galleryDtkg=[];await ghFetch('data/dtkg.json',[],'clear dtkg gallery');renderGallery();toast('Cleared');}
-
-async function deleteKrrtkgItem(i){if(!confirm('Delete?'))return;galleryKrrtkg.splice(i,1);await ghFetch('data/krrtkg.json',galleryKrrtkg,'delete krrtkg item');renderGallery();toast('Deleted');}
-async function clearKrrtkgGallery(){if(!confirm('Clear all KRRTKG gallery?'))return;galleryKrrtkg=[];await ghFetch('data/krrtkg.json',[],'clear krrtkg gallery');renderGallery();toast('Cleared');}
-
 async function deleteBzrsItem(i){if(!confirm('Delete?'))return;galleryBzrs.splice(i,1);await ghFetch('data/bzrs.json',galleryBzrs,'delete bzrs item');renderGallery();toast('Deleted');}
+async function deleteKrrtkgItem(i){if(!confirm('Delete?'))return;galleryKrrtkg.splice(i,1);await ghFetch('data/krrtkg.json',galleryKrrtkg,'delete krrtkg item');renderGallery();toast('Deleted');}
+async function deleteDtkgItem(i){if(!confirm('Delete?'))return;galleryDtkg.splice(i,1);await ghFetch('data/dtkg.json',galleryDtkg,'delete dtkg item');renderGallery();toast('Deleted');}
+async function clearAllGallery(){if(!confirm('Clear all PLLS gallery?'))return;gallery=[];await ghFetch('data/plls.json',[],'clear plls gallery');renderGallery();toast('Cleared');}
+async function clearKrrtkGallery(){if(!confirm('Clear all KRRTK gallery?'))return;galleryKrrtk=[];await ghFetch('data/krrtk.json',[],'clear krrtk gallery');renderGallery();toast('Cleared');}
+async function clearDtkGallery(){if(!confirm('Clear all DTK gallery?'))return;galleryDtk=[];await ghFetch('data/dtk.json',[],'clear dtk gallery');renderGallery();toast('Cleared');}
 async function clearBzrsGallery(){if(!confirm('Clear all BZRS gallery?'))return;galleryBzrs=[];await ghFetch('data/bzrs.json',[],'clear bzrs gallery');renderGallery();toast('Cleared');}
+async function clearKrrtkgGallery(){if(!confirm('Clear all KRRTKG gallery?'))return;galleryKrrtkg=[];await ghFetch('data/krrtkg.json',[],'clear krrtkg gallery');renderGallery();toast('Cleared');}
+async function clearDtkgGallery(){if(!confirm('Clear all DTKG gallery?'))return;galleryDtkg=[];await ghFetch('data/dtkg.json',[],'clear dtkg gallery');renderGallery();toast('Cleared');}
+async function addGalleryToBatch(work,idx){
+  const active=getActiveBatch();
+  if(!active){toast('No active batch');return;}
+  if(active.work!==work){toast('Active batch is for '+active.work.toUpperCase());return;}
+  const srcMap={pills:gallery,krrtk:galleryKrrtk,dtk:galleryDtk,bzrs:galleryBzrs,krrtkg:galleryKrrtkg,dtkg:galleryDtkg};
+  const item=(srcMap[work]||[])[idx];
+  if(!item)return;
+  active.items.push({seed:item.seed,dataUrl:item.dataUrl,savedAt:item.savedAt||Date.now()});
+  setActiveBatch(active);
+  renderBatches();
+  toast('Added #'+item.seed+' to batch "'+active.name+'"');
+}
+
 
 // ── BATCHES ───────────────────────────────────────────
 function getBatches(){try{return JSON.parse(localStorage.getItem(BATCH_KEY)||'[]');}catch(e){return[];}}
