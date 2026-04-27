@@ -261,28 +261,15 @@ function draw(seed) {
   const depthLevel = Math.max(1, Math.round(Math.log2(a / Math.max(minSize, 1))));
   const density = drawCount > squares.length*0.5 ? 'Dense' : drawCount > squares.length*0.25 ? 'Scattered' : 'Open';
 
-  // Progressive draw
-  const counter = document.getElementById('revealCounter');
-  counter.classList.add('visible');
-  const stepDelay = Math.max(5, Math.min(40, 800/squares.length));
-  let i = 0;
-
-  function step() {
-    if (i >= squares.length) {
-      counter.classList.remove('visible');
-      _generating = false;
-      updateTraits(pal, drawCount, squares.length, depthLevel, seed);
-      return;
+  // Draw all squares instantly
+  for (let j = 0; j < squares.length; j++) {
+    if (toDraw[j]) {
+      ctx.fillStyle = squares[j].color;
+      ctx.fillRect(squares[j].x, squares[j].y, squares[j].size, squares[j].size);
     }
-    if (toDraw[i]) {
-      ctx.fillStyle = squares[i].color;
-      ctx.fillRect(squares[i].x, squares[i].y, squares[i].size, squares[i].size);
-    }
-    counter.textContent = `${i+1} / ${squares.length}`;
-    i++;
-    setTimeout(step, stepDelay);
   }
-  step();
+  _generating = false;
+  updateTraits(pal, drawCount, squares.length, depthLevel, seed);
 }
 
 function updateTraits(pal, drawnCount, totalCount, depthLevel, seed) {
