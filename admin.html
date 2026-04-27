@@ -403,7 +403,7 @@ async function saveWorks() {
   await ghFetch('data/works.json', works, 'update works');
 }
 
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 
 function renderWorks() {
   const el = $('works-count');
