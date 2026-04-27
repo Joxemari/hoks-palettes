@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hoks — editor</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f0f0f; --surface: #1a1a1a; --border: #2a2a2a;
+  --ink: #e8e8e8; --ink3: #666; --accent: #f5d216;
+  --f: 'Courier New', Courier, monospace;
+}
+body { font-family: var(--f); background: var(--bg); color: var(--ink); height: 100vh; overflow: hidden; }
+
+/* ── HEADER ── */
+.header {
+  height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.family-name { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; }
+.family-slug { font-size: 9px; color: var(--ink3); letter-spacing: 0.08em; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.btn {
+  font-family: var(--f); font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; border: none; border-radius: 2px;
+  padding: 6px 14px; cursor: pointer; transition: opacity 0.15s;
+}
+.btn:hover { opacity: 0.8; }
+.btn-run { background: var(--accent); color: #000; }
+.btn-save { background: var(--ink); color: var(--bg); }
+.btn-ghost { background: transparent; color: var(--ink3); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--ink); border-color: #555; opacity: 1; }
+.status { font-size: 9px; color: var(--ink3); letter-spacing: 0.06em; min-width: 120px; text-align: right; }
+
+/* ── LAYOUT ── */
+.layout { display: grid; grid-template-columns: 1fr 1fr; height: calc(100vh - 44px); }
+.pane { display: flex; flex-direction: column; }
+.pane + .pane { border-left: 1px solid var(--border); }
+
+/* ── CODE PANE ── */
+.pane-header {
+  height: 32px; display: flex; align-items: center; padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 9px; color: var(--ink3); letter-spacing: 0.1em; text-transform: uppercase;
+  justify-content: space-between;
+}
+#code {
+  flex: 1; width: 100%; resize: none; outline: none; border: none;
+  background: var(--bg); color: #e8e8e8;
+  font-family: var(--f); font-size: 12px; line-height: 1.7;
+  padding: 16px; tab-size: 2;
+  overflow: auto;
+}
+/* ── PREVIEW PANE ── */
+.preview-area {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  background: #141414; position: relative;
+}
+canvas#preview {
+  display: block;
+  max-width: min(90%, 90vh);
+  max-height: min(90%, 90vw);
+  width: auto; height: auto;
+  outline: 1px solid rgba(255,255,255,0.06);
+}
+.preview-empty {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-size: 10px; color: var(--ink3); letter-spacing: 0.1em; text-transform: uppercase;
+  text-align: center; line-height: 2;
+  pointer-events: none;
+}
+.seed-row {
+  height: 36px; display: flex; align-items: center; padding: 0 14px;
+  border-top: 1px solid var(--border); gap: 12px;
+  font-size: 10px; color: var(--ink3);
+}
+.seed-val { color: var(--ink); font-size: 10px; letter-spacing: 0.04em; }
+.error-pane {
+  display: none; padding: 12px 14px;
+  background: #1a0a0a; border-top: 1px solid #3a1a1a;
+  font-size: 10px; color: #ff6b6b; line-height: 1.6;
+  max-height: 100px; overflow-y: auto;
+}
+.error-pane.show { display: block; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <div>
+      <div class="family-name" id="familyName">—</div>
+      <div class="family-slug" id="familySlug"></div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="status" id="status"></span>
+    <button class="btn btn-ghost" onclick="newSeed()">↻ New seed</button>
+    <button class="btn btn-run" onclick="runCode()">▶ Run</button>
+    <button class="btn btn-save" onclick="saveCode()">↓ Save</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- CODE -->
+  <div class="pane">
+    <div class="pane-header">
+      <span>Draw Algorithm — JS</span>
+      <span style="font-size:9px;color:#555;">ctx · W · H · seed · colors · Rng</span>
+    </div>
+    <textarea id="code" spellcheck="false" placeholder="// Paste your draw() function body here.
+// Available: ctx, W, H, seed, colors (array), Rng class
+// Example:
+// ctx.fillStyle = colors[0];
+// ctx.fillRect(0, 0, W, H);"></textarea>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="pane">
+    <div class="pane-header">
+      <span>Preview</span>
+      <span id="canvasInfo" style="font-size:9px;color:#555;"></span>
+    </div>
+    <div class="preview-area">
+      <div class="preview-empty" id="emptyHint">Write code and press ▶ Run<br>or Cmd+Enter</div>
+      <canvas id="preview" width="600" height="600"></canvas>
+    </div>
+    <div class="seed-row">
+      <span>Seed</span>
+      <span class="seed-val" id="seedDisplay">—</span>
+      <span style="margin-left:auto;font-size:9px;">Palette</span>
+      <select id="palSelect" style="font-family:var(--f);font-size:9px;background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:2px;padding:3px 6px;cursor:pointer;outline:none;"></select>
+    </div>
+    <div class="error-pane" id="errorPane"></div>
+  </div>
+</div>
+
+<script>
+const RAW = 'https://raw.githubusercontent.com/Joxemari/hoks/main/data/';
+const GH_TOKEN_KEY = 'hoks-gh-token';
+const REPO = 'Joxemari/hoks';
+
+// ── Params ────────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+const familyId = params.get('family') || '';
+let currentSeed = (Math.random() * 0xFFFFFFFF) >>> 0;
+let palettes = [], works = [], currentWork = null;
+
+// ── RNG ───────────────────────────────────────────────
+class Rng {
+  constructor(s) { this.s = (s | 0) >>> 0; }
+  next() { this.s = ((Math.imul(1664525, this.s) + 1013904223) >>> 0); return this.s / 4294967296; }
+  int(a, b) { return Math.floor(a + this.next() * (b - a + 1)); }
+  range(a, b) { return a + this.next() * (b - a); }
+  weighted(items) { let v=this.next(),acc=0; for(const i of items){acc+=i.prob;if(v<acc)return i;} return items[items.length-1]; }
+}
+
+// ── Load data ─────────────────────────────────────────
+async function init() {
+  // Load palettes
+  try {
+    const data = await fetch(RAW + 'palettes.json?t=' + Date.now()).then(r => r.json());
+    palettes = data.filter(p => p.active !== false);
+  } catch(e) { palettes = []; }
+
+  // Load works
+  try {
+    works = await fetch(RAW + 'works.json?t=' + Date.now()).then(r => r.json());
+  } catch(e) { works = []; }
+
+  // Find current work
+  currentWork = works.find(w => w.id === familyId || w.slug === familyId);
+
+  // Update header
+  if (currentWork) {
+    document.getElementById('familyName').textContent = currentWork.name;
+    document.getElementById('familySlug').textContent = currentWork.slug + '.html';
+    document.title = 'hoks editor — ' + currentWork.name;
+    if (currentWork.drawCode) {
+      document.getElementById('code').value = currentWork.drawCode;
+    }
+    // Set canvas size
+    const [cw, ch] = (currentWork.canvas || '600x600').split('x').map(Number);
+    const canvas = document.getElementById('preview');
+    canvas.width = cw || 600;
+    canvas.height = ch || 600;
+    document.getElementById('canvasInfo').textContent = `${canvas.width}×${canvas.height}`;
+  } else if (familyId) {
+    document.getElementById('familyName').textContent = familyId.toUpperCase();
+    setStatus('Family not found in works.json', true);
+  } else {
+    document.getElementById('familyName').textContent = 'No family selected';
+    setStatus('Add ?family=slug to URL', false);
+  }
+
+  // Build palette selector
+  buildPalSelect();
+
+  // Auto-run if code present
+  if (document.getElementById('code').value.trim()) {
+    runCode();
+  }
+}
+
+function buildPalSelect() {
+  const sel = document.getElementById('palSelect');
+  sel.innerHTML = palettes.map((p,i) => `<option value="${i}">${p.name}</option>`).join('');
+}
+
+function getSelectedPalette() {
+  const idx = parseInt(document.getElementById('palSelect').value) || 0;
+  return palettes[idx] || { colors: ['#4464a1','#ee726b','#fef9c6','#df5f50','#111'] };
+}
+
+// ── Run ───────────────────────────────────────────────
+function runCode() {
+  const code = document.getElementById('code').value.trim();
+  if (!code) return;
+
+  const canvas = document.getElementById('preview');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pal = getSelectedPalette();
+  const colors = pal.colors;
+  const errorPane = document.getElementById('errorPane');
+  const emptyHint = document.getElementById('emptyHint');
+
+  // Clear
+  ctx.clearRect(0, 0, W, H);
+  errorPane.classList.remove('show');
+  emptyHint.style.display = 'none';
+
+  try {
+    const fn = new Function('ctx', 'W', 'H', 'seed', 'colors', 'Rng', code);
+    fn(ctx, W, H, currentSeed, colors, Rng);
+    document.getElementById('seedDisplay').textContent = '#' + currentSeed;
+    setStatus('Ran · seed #' + currentSeed);
+  } catch(e) {
+    errorPane.textContent = e.toString();
+    errorPane.classList.add('show');
+    setStatus('Error — see below', true);
+  }
+}
+
+function newSeed() {
+  currentSeed = (Math.random() * 0xFFFFFFFF) >>> 0;
+  runCode();
+}
+
+// ── Save ──────────────────────────────────────────────
+async function saveCode() {
+  const token = localStorage.getItem(GH_TOKEN_KEY);
+  if (!token) { setStatus('No GitHub token — log in to admin first', true); return; }
+
+  const code = document.getElementById('code').value;
+
+  // Update in works array
+  if (currentWork) currentWork.drawCode = code;
+  else { setStatus('No work family loaded', true); return; }
+
+  try {
+    setStatus('Saving…');
+    let sha;
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO}/contents/data/works.json`, {headers:{'Authorization':'Bearer '+token}});
+      if (r.ok) sha = (await r.json()).sha;
+    } catch(e) {}
+
+    const body = {
+      message: `update works.json draw code for ${currentWork.name}`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(works, null, 2))))
+    };
+    if (sha) body.sha = sha;
+
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/data/works.json`, {
+      method: 'PUT',
+      headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+
+    if (r.ok) setStatus('Saved ✓ ' + new Date().toLocaleTimeString());
+    else setStatus('Save failed — ' + r.status, true);
+  } catch(e) {
+    setStatus('Save error: ' + e.message, true);
+  }
+}
+
+function setStatus(msg, isError = false) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.style.color = isError ? '#ff6b6b' : '#666';
+}
+
+// ── Keyboard shortcuts ────────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveCode(); }
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'Enter') { e.preventDefault(); newSeed(); runCode(); }
+});
+
+// Tab key in textarea
+document.getElementById('code').addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const el = e.target;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    el.value = el.value.substring(0, start) + '  ' + el.value.substring(end);
+    el.selectionStart = el.selectionEnd = start + 2;
+  }
+});
+
+init();
+</script>
+</body>
+</html>
