@@ -460,7 +460,8 @@ function scrambleAndDraw(seed, drawFn) {
       if (step >= STEPS) {
         clearInterval(el._t);
         el.textContent = '#' + target;
-        // Draw, then unblur
+        // Reset generating flag BEFORE draw so it isn't blocked
+        _generating = false;
         drawFn();
         if (canvas) {
           canvas.style.transition = 'filter 0.25s ease, opacity 0.25s ease';

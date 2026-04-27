@@ -123,7 +123,7 @@ canvas {
     <div class="canvas-area">
       <canvas id="c" width="1414" height="1000"></canvas>
       <div class="reveal-overlay" id="revealOverlay">
-        <div class="reveal-counter" id="revealCounter"></div>
+        <div class="reveal-counter" id="revealCounter" style="display:none"></div>
       </div>
       <div class="canvas-hint">Click canvas to generate new variation</div>
     </div>
@@ -276,11 +276,11 @@ function loadPalettes() {
     .then(data => {
       const active = data.filter(p => p.active !== false);
       palettes = normalizePalettes(active.length ? active : [...DEFAULTS]);
-      if (!_isExact) draw(currentSeed);
+      if (!_isExact) scrambleAndDraw(currentSeed, () => draw(currentSeed));
     })
     .catch(() => {
       palettes = normalizePalettes([...DEFAULTS]);
-      if (!_isExact) draw(currentSeed);
+      if (!_isExact) scrambleAndDraw(currentSeed, () => draw(currentSeed);
     });
 }
 
@@ -343,35 +343,19 @@ function draw(s) {
   let bgTrait = 'Off-white';
   if (rng.bool(0.6)) { ctx.fillStyle = rng.pickFrom(colors); ctx.fillRect(0,0,W,H); bgTrait = 'Colored'; }
 
-  // Show counter
-  const counter = document.getElementById('revealCounter');
-  counter.classList.add('visible');
-
-  // Draw pills progressively with delay
-  let i = 0;
+  // Draw all pills instantly
   const styleCount = {};
-  const stepDelay = Math.max(20, Math.min(120, 600 / numShapes));
-
-  function step() {
-    if (i >= pills.length) {
-      ctx.globalCompositeOperation = 'source-over';
-      counter.classList.remove('visible');
-      _generating = false;
-      updateTraits(arch, pal, styleCount, bgTrait, numShapes, s);
-      return;
-    }
-    const pill = pills[i];
+  ctx.globalCompositeOperation = 'source-over';
+  for (const pill of pills) {
     styleCount[pill.style] = (styleCount[pill.style]||0) + 1;
     const x1 = pill.cx - Math.cos(pill.angle)*pill.hl;
     const y1 = pill.cy - Math.sin(pill.angle)*pill.hl;
     const x2 = pill.cx + Math.cos(pill.angle)*pill.hl;
     const y2 = pill.cy + Math.sin(pill.angle)*pill.hl;
     drawPill(ctx, x1, y1, x2, y2, pill.thickness, pill.color, pill.style, rng, colors);
-    counter.textContent = `${i+1} / ${numShapes}`;
-    i++;
-    setTimeout(step, stepDelay);
   }
-  step();
+  _generating = false;
+  updateTraits(arch, pal, styleCount, bgTrait, numShapes, s);
 }
 
 function updateTraits(arch, pal, styleCount, bgTrait, numShapes, s) {
@@ -631,7 +615,8 @@ function scrambleAndDraw(seed, drawFn) {
       if (step >= STEPS) {
         clearInterval(el._t);
         el.textContent = '#' + target;
-        // Draw, then unblur
+        // Reset generating flag BEFORE draw so it isn't blocked
+        _generating = false;
         drawFn();
         if (canvas) {
           canvas.style.transition = 'filter 0.25s ease, opacity 0.25s ease';
