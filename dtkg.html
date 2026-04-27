@@ -231,10 +231,9 @@ function draw(seed) {
   const colors = pal.colors;
   const margin = Math.round(W * 0.0833); // ~50/600
 
-  // Background
-  const bgColor = colors[rng.int(0, colors.length-1)];
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, W, H);
+  // 1. Mesh gradient background
+  const rngBg = new Rng(seed ^ 0xDEADBEEF);
+  drawMeshGradient(ctx, W, H, colors, rngBg);
 
   // Grid — n from 1 to 7
   const n = rng.int(1, 7);
