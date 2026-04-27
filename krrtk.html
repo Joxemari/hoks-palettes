@@ -433,43 +433,51 @@ function getActivePalette(rng) {
 }
 
 
-// ── SCRAMBLE + BLUR REVEAL ─────────────────────────────
+
+
+// ── SCRAMBLE + BLUR REVEAL ─────────────────────────────────────────────────
 function scrambleAndDraw(seed, drawFn) {
   const el = document.getElementById('seedDisplay');
   const canvas = document.getElementById('c');
-  const ctx = canvas.getContext('2d');
   const target = String(seed);
   const chars = '0123456789';
-  const steps = 22;
-  const duration = 750;
-  const stepMs = duration / steps;
+  const STEPS = 22;
+  const DURATION = 700; // ms total scramble time
   let step = 0;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.style.filter = 'blur(18px)';
-  canvas.style.opacity = '0.4';
-  canvas.style.transition = 'filter 0.3s ease, opacity 0.3s ease';
-  if (el && el._scrambleTimer) clearInterval(el._scrambleTimer);
+
+  // Show blur while scrambling
+  if (canvas) {
+    canvas.style.transition = 'none';
+    canvas.style.filter = 'blur(16px)';
+    canvas.style.opacity = '0.35';
+  }
   if (el) {
-    el._scrambleTimer = setInterval(() => {
+    if (el._t) clearInterval(el._t);
+    el._t = setInterval(() => {
       step++;
-      const resolved = Math.floor((step / steps) * target.length);
-      let display = '#';
+      const resolved = Math.floor((step / STEPS) * target.length);
+      let txt = '#';
       for (let i = 0; i < target.length; i++) {
-        display += i < resolved ? target[i] : chars[Math.floor(Math.random() * 10)];
+        txt += i < resolved ? target[i] : chars[Math.floor(Math.random() * 10)];
       }
-      el.textContent = display;
-      if (step >= steps) {
-        clearInterval(el._scrambleTimer);
+      el.textContent = txt;
+      if (step >= STEPS) {
+        clearInterval(el._t);
         el.textContent = '#' + target;
+        // Draw, then unblur
         drawFn();
-        requestAnimationFrame(() => {
-          canvas.style.filter = 'blur(0px)';
+        if (canvas) {
+          canvas.style.transition = 'filter 0.25s ease, opacity 0.25s ease';
+          canvas.style.filter = 'none';
           canvas.style.opacity = '1';
-        });
+        }
       }
-    }, stepMs);
-  } else { drawFn(); }
+    }, DURATION / STEPS);
+  } else {
+    drawFn();
+  }
 }
+
 function animateSeed(seed) {
   const el = document.getElementById('seedDisplay');
   if (el) el.textContent = '#' + seed;

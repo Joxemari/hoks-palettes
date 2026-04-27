@@ -390,6 +390,15 @@ async function ghFetch(path,content,msg){
 async function ghRead(path){const r=await fetch(RAW_BASE+path+'?t='+Date.now());if(!r.ok)return null;return r.json();}
 function showSaving(v){$('saving').classList.toggle('show',v);}
 
+
+async function loadWorks() {
+  try {
+    const data = await ghRead('works.json');
+    works = data || [];
+  } catch(e) { works = []; }
+  if (typeof renderWorks === 'function') renderWorks();
+}
+
 // ── AUTH ──────────────────────────────────────────────
 function getStoredPwd(){return localStorage.getItem(PWD_KEY)||DEFAULT_PWD;}
 function tryLogin(){if($('pwd-input').value===getStoredPwd()){sessionStorage.setItem(SESSION_KEY,'1');showAdmin();}else{$('login-error').style.display='block';$('pwd-input').value='';$('pwd-input').focus();}}
@@ -419,7 +428,7 @@ async function loadAll(){
     ghRead('dtkg.json').then(d=>d||[]),
     ghRead('site.json').then(d=>d||{}),
   ]);
-  renderPalettes();renderGallery();renderBatches();loadSiteForm();if(typeof loadWorks==="function")loadWorks();
+  loadWorks();renderPalettes();renderGallery();renderBatches();loadSiteForm();
 }
 
 // ── PALETTE PROB ──────────────────────────────────────
