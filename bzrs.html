@@ -205,19 +205,27 @@ function draw(seed){
   const colorTwo=colors[rng.int(0,colors.length-1)];
 
   ctx.save();
-  ctx.lineWidth=Math.max(0.5, W/600); // scale linewidth with canvas
+  ctx.lineWidth = Math.max(0.5, W/600);
+  // Pre-compute all curve parameters for determinism
+  const curveData = [];
   for(let i=0;i<numCurves;i++){
-    const startY=margin+i*curveDist;
-    const endY=rng.range(margin,H-margin);
-    const cp1x=rng.range(startX-margin,startX);
-    const cp1y=startY+rng.range(-margin,margin);
-    const cp2x=rng.range(endX,endX+margin);
-    const cp2y=endY+rng.range(-margin,margin);
-    const t=i/numCurves;
-    ctx.strokeStyle=lerpColor(colorOne,colorTwo,t);
+    curveData.push({
+      startY: margin+i*curveDist,
+      endY: rng.range(margin,H-margin),
+      cp1x: rng.range(startX-margin,startX),
+      cp1y: 0, cp2x: 0, cp2y: 0, t: i/numCurves
+    });
+    curveData[i].cp1y = curveData[i].startY + rng.range(-margin,margin);
+    curveData[i].cp2x = rng.range(endX,endX+margin);
+    curveData[i].cp2y = curveData[i].endY + rng.range(-margin,margin);
+  }
+  // Draw all curves synchronously (computed above for RNG determinism)
+  for(let i=0;i<numCurves;i++){
+    const cd = curveData[i];
+    ctx.strokeStyle = lerpColor(colorOne,colorTwo,cd.t);
     ctx.beginPath();
-    ctx.moveTo(startX,startY);
-    ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,endX,endY);
+    ctx.moveTo(startX,cd.startY);
+    ctx.bezierCurveTo(cd.cp1x,cd.cp1y,cd.cp2x,cd.cp2y,endX,cd.endY);
     ctx.stroke();
   }
   ctx.restore();
