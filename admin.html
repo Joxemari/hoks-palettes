@@ -502,7 +502,7 @@ function openAddWorkModal() {
 function getStoredPwd(){return localStorage.getItem(PWD_KEY)||DEFAULT_PWD;}
 function tryLogin(){if($('pwd-input').value===getStoredPwd()){sessionStorage.setItem(SESSION_KEY,'1');showAdmin();}else{$('login-error').style.display='block';$('pwd-input').value='';$('pwd-input').focus();}}
 function logout(){sessionStorage.removeItem(SESSION_KEY);location.reload();}
-function showAdmin(){$('login-screen').style.display='none';$('admin-screen').style.display='block';loadAll();}
+function showAdmin(){$('login-screen').style.display='none';$('admin-screen').style.display='block';loadAll();switchTab('works');}
 if(sessionStorage.getItem(SESSION_KEY)==='1')showAdmin();
 $('pwd-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
 
