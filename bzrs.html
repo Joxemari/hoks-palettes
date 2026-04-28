@@ -323,7 +323,7 @@ function exportCard(){
 }
 
 function checkBatchButton(){try{const active=JSON.parse(localStorage.getItem('hoks-active-batch')||'null');const btn=document.getElementById('batchBtn');if(btn){if(active&&active.work==='bzrs'){btn.style.display='';btn.textContent=`+ Save to Batch "${active.name}" (${active.items.length})`;}else btn.style.display='none';}}catch(e){}}
-function saveToBatch(){const src=document.getElementById('c');const dataUrl=src.toDataURL('image/jpeg',0.9);const key='hoks-active-batch';try{const active=JSON.parse(localStorage.getItem(key)||'null');if(!active||active.work!=='bzrs'){toast('No active BZRS batch — create one in Admin');return;}active.items.push({seed:currentSeed,dataUrl,savedAt:Date.now()});localStorage.setItem(key,JSON.stringify(active));checkBatchButton();toast(`Added to batch "${active.name}" (${active.items.length} total)`);}catch(e){toast('Error');}}
+function saveToBatch(){const src=document.getElementById('c');const dataUrl=src.toDataURL('image/jpeg',0.9);const key='hoks-active-batch';try{const active=JSON.parse(localStorage.getItem(key)||'null');if(!active||active.work!=='bzrs'){toast('No active BZRS batch — create one in Admin');return;}active.items.push({seed:currentSeed,dataUrl,savedAt:Date.now(),palette:active.palette||'random'});localStorage.setItem(key,JSON.stringify(active));checkBatchButton();toast(`Added to batch "${active.name}" (${active.items.length} total)`);}catch(e){toast('Error');}}
 
 
 

@@ -278,7 +278,13 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
           </div>
           <div class="batch-field">
             <label>Batch Name</label>
-            <input type="text" id="batch-name" placeholder="e.g. Spring 2026">
+            <input type="text" id="batch-name" placeholder="e.g. Spring 2026" style="cursor:text;user-select:text;">
+          </div>
+          <div class="batch-field" style="max-width:180px;">
+            <label>Palette</label>
+            <select id="batch-palette" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;font-family:var(--f);font-size:11px;color:var(--ink);outline:none;">
+              <option value="random">Random (weighted)</option>
+            </select>
           </div>
           <button class="btn" style="flex-shrink:0;align-self:flex-end" onclick="createBatch()">Create Batch</button>
         </div>
@@ -287,7 +293,7 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
       <div id="active-batch-panel" style="display:none;margin-bottom:2rem;border:2px solid var(--ink);border-radius:3px;overflow:hidden;">
         <div style="padding:12px 14px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;">
           <div>
-            <span style="font-size:11px;font-weight:700;color:#fff;letter-spacing:0.06em;" id="active-batch-title" contenteditable="true" title="Click to rename" style="cursor:text;outline:none;border-bottom:1px solid rgba(255,255,255,0.25);" onblur="renameBatch(this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">—</span>
+            <span style="font-size:11px;font-weight:700;color:#fff;letter-spacing:0.06em;cursor:text;outline:none;border-bottom:1px solid rgba(255,255,255,0.2);" id="active-batch-title" contenteditable="true" title="Click to rename" onblur="renameBatch(this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">—</span>
             <span style="font-size:9px;color:#888;margin-left:10px;letter-spacing:0.06em;" id="active-batch-work"></span>
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
@@ -672,12 +678,21 @@ function addGalleryToBatch(work, idx) {
   toast(`Added #${item.seed} to batch "${active.name}"`);
 }
 
+function buildBatchPaletteDropdown(){
+  const sel=$('batch-palette');
+  if(!sel)return;
+  sel.innerHTML='<option value="random">Random (weighted)</option>'+
+    pals.filter(p=>p.active!==false).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+}
+
 function createBatch(){
   const name=$('batch-name').value.trim();if(!name){toast('Add a batch name');return;}
   const work=$('batch-work').value;
   const active=getActiveBatch();
   if(active){if(!confirm('You have an open batch. Close it and start a new one?'))return;closeBatch();}
-  const batch={id:Date.now(),name,work,items:[],created:Date.now()};
+  const palSel=$('batch-palette');
+  const palette=palSel?palSel.value:'random';
+  const batch={id:Date.now(),name,work,palette,items:[],created:Date.now()};
   setActiveBatch(batch);
   $('batch-name').value='';
   renderBatches();
@@ -715,14 +730,40 @@ function downloadBatch(id){
   toast('Downloading '+b.items.length+' files…');
 }
 
-function renameBatch(n){if(!n)return;const b=getActiveBatch();if(!b)return;b.name=n;setActiveBatch(b);const bs=getBatches();const ex=bs.find(x=>x.id===b.id);if(ex){ex.name=n;saveBatches(bs);}renderBatches();toast('Renamed to "'+n+'"');}
-function renameSavedBatch(id,n){if(!n)return;const bs=getBatches();const b=bs.find(x=>x.id===id);if(!b)return;b.name=n;saveBatches(bs);const a=getActiveBatch();if(a&&a.id===id){a.name=n;setActiveBatch(a);}toast('Renamed');}
+
+function renameBatch(newName) {
+  if (!newName) return;
+  const active = getActiveBatch();
+  if (!active) return;
+  active.name = newName;
+  setActiveBatch(active);
+  // Also update in completed batches list if it's there
+  const batches = getBatches();
+  const existing = batches.find(b => b.id === active.id);
+  if (existing) { existing.name = newName; saveBatches(batches); }
+  renderBatches();
+  toast('Batch renamed to "' + newName + '"');
+}
+
+function renameSavedBatch(id, newName) {
+  if (!newName) return;
+  const batches = getBatches();
+  const b = batches.find(x => x.id === id);
+  if (!b) return;
+  b.name = newName;
+  saveBatches(batches);
+  // Also update active if same
+  const active = getActiveBatch();
+  if (active && active.id === id) { active.name = newName; setActiveBatch(active); }
+  toast('Batch renamed');
+}
+
 function renderBatches(){
   const active=getActiveBatch();
   const panel=$('active-batch-panel');
   if(active){
     panel.style.display='block';
-    const _abt=$('active-batch-title');if(document.activeElement!==_abt)_abt.textContent=active.name;
+    const abt=$('active-batch-title'); if(!document.activeElement||document.activeElement!==abt) abt.textContent=active.name;
     $('active-batch-work').textContent=active.work.toUpperCase()+' · '+active.items.length+' item'+( active.items.length===1?'':'s');
     $('active-batch-count').textContent=active.items.length;
     $('active-batch-link').href=active.work+'.html';
@@ -741,7 +782,7 @@ function renderBatches(){
     <div class="batch-card">
       <div class="batch-header">
         <div>
-          <div class="batch-title" contenteditable="true" style="outline:none;cursor:text;border-bottom:1px dashed rgba(0,0,0,0.15);" title="Click to rename" onblur="renameSavedBatch(${b.id},this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();event.stopPropagation();} ">${esc(b.name)}</div>
+          <div class="batch-title" contenteditable="true" title="Click to rename" style="outline:none;border-bottom:1px dashed transparent;cursor:text;" onblur="renameSavedBatch(${b.id},this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();} event.stopPropagation();">${esc(b.name)}</div>
           <div class="batch-meta">${b.work.toUpperCase()} · ${b.items.length} work${b.items.length===1?'':'s'} · ${fmtDate(b.created)}</div>
         </div>
         <div class="batch-actions">
