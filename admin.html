@@ -287,7 +287,7 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
       <div id="active-batch-panel" style="display:none;margin-bottom:2rem;border:2px solid var(--ink);border-radius:3px;overflow:hidden;">
         <div style="padding:12px 14px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;">
           <div>
-            <span style="font-size:11px;font-weight:700;color:#fff;letter-spacing:0.06em;" id="active-batch-title">—</span>
+            <span style="font-size:11px;font-weight:700;color:#fff;letter-spacing:0.06em;" id="active-batch-title" contenteditable="true" title="Click to rename" style="cursor:text;outline:none;border-bottom:1px solid rgba(255,255,255,0.25);" onblur="renameBatch(this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">—</span>
             <span style="font-size:9px;color:#888;margin-left:10px;letter-spacing:0.06em;" id="active-batch-work"></span>
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
@@ -715,12 +715,14 @@ function downloadBatch(id){
   toast('Downloading '+b.items.length+' files…');
 }
 
+function renameBatch(n){if(!n)return;const b=getActiveBatch();if(!b)return;b.name=n;setActiveBatch(b);const bs=getBatches();const ex=bs.find(x=>x.id===b.id);if(ex){ex.name=n;saveBatches(bs);}renderBatches();toast('Renamed to "'+n+'"');}
+function renameSavedBatch(id,n){if(!n)return;const bs=getBatches();const b=bs.find(x=>x.id===id);if(!b)return;b.name=n;saveBatches(bs);const a=getActiveBatch();if(a&&a.id===id){a.name=n;setActiveBatch(a);}toast('Renamed');}
 function renderBatches(){
   const active=getActiveBatch();
   const panel=$('active-batch-panel');
   if(active){
     panel.style.display='block';
-    $('active-batch-title').textContent=active.name;
+    const _abt=$('active-batch-title');if(document.activeElement!==_abt)_abt.textContent=active.name;
     $('active-batch-work').textContent=active.work.toUpperCase()+' · '+active.items.length+' item'+( active.items.length===1?'':'s');
     $('active-batch-count').textContent=active.items.length;
     $('active-batch-link').href=active.work+'.html';
@@ -739,7 +741,7 @@ function renderBatches(){
     <div class="batch-card">
       <div class="batch-header">
         <div>
-          <div class="batch-title">${esc(b.name)}</div>
+          <div class="batch-title" contenteditable="true" style="outline:none;cursor:text;border-bottom:1px dashed rgba(0,0,0,0.15);" title="Click to rename" onblur="renameSavedBatch(${b.id},this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();event.stopPropagation();} ">${esc(b.name)}</div>
           <div class="batch-meta">${b.work.toUpperCase()} · ${b.items.length} work${b.items.length===1?'':'s'} · ${fmtDate(b.created)}</div>
         </div>
         <div class="batch-actions">
