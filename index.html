@@ -40,32 +40,6 @@ body { background: #fff; color: #111; height: 100vh; overflow: hidden; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
 }
 .cell:hover .cell-label { opacity: 1; }
-.filter-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 2rem; height: 52px; background: #111;
-  transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.23,1,0.32,1);
-  pointer-events: none;
-}
-.filter-bar.visible { transform: translateY(0); pointer-events: auto; }
-.filter-bar-left { display: flex; align-items: center; gap: 1.5rem; }
-.filter-bar-series {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #fff;
-}
-.filter-bar-hint {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-}
-.filter-bar-clear {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: rgba(255,255,255,0.5); cursor: pointer;
-  background: none; border: none; padding: 0; transition: color 0.15s;
-}
-.filter-bar-clear:hover { color: #fff; }
 .hint {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
   font-family: 'Courier New', Courier, monospace;
@@ -84,13 +58,6 @@ body { background: #fff; color: #111; height: 100vh; overflow: hidden; }
 
 <div id="wrap"><div id="board"></div></div>
 
-<div id="filter-bar" class="filter-bar">
-  <div class="filter-bar-left">
-    <span class="filter-bar-series" id="filter-bar-series"></span>
-    <span class="filter-bar-hint">click a work to open · esc or click outside to clear</span>
-  </div>
-  <button class="filter-bar-clear" id="filter-bar-clear">Clear ✕</button>
-</div>
 <div class="hint" id="hint">drag to explore</div>
 
 <script>
@@ -248,23 +215,51 @@ function drawPLLS(canvas,seed){
   for(const pill of pills){const x1=pill.cx-Math.cos(pill.angle)*pill.hl,y1=pill.cy-Math.sin(pill.angle)*pill.hl,x2=pill.cx+Math.cos(pill.angle)*pill.hl,y2=pill.cy+Math.sin(pill.angle)*pill.hl;drawPill(ctx,x1,y1,x2,y2,pill.thickness,pill.color,pill.style,rng,colors);}
 }
 
-const DRAWFNS = {plls:drawPLLS,krrtk:drawKRRTK,dtk:drawDTK,bzrs:drawBZRS,krrtkg:drawKRRTKG,dtkg:drawDTKG};
-const LABELS  = {plls:'PLLS',krrtk:'KRRTK',dtk:'DTK',bzrs:'BZRS',krrtkg:'KRRTKG',dtkg:'DTKG'};
-const CRES    = {plls:[566,400],krrtk:[320,320],dtk:[320,320],bzrs:[320,320],krrtkg:[320,320],dtkg:[320,320]};
-const SERIES  = ['plls','krrtk','dtk','bzrs','krrtkg','dtkg'];
+// ── DRAW: PLLSG (pills on mesh gradient + grain) ─────────────────────────────
+function drawPLLSG(canvas,seed){
+  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,rng=new Rng(seed);
+  const arch=rng.weighted(ARCHETYPES),pal=getActivePalette(rng),colors=pal.colors;
+  // Mesh gradient background
+  drawMesh(ctx,W,H,colors,new Rng(seed^0xDEADBEEF));
+  const sizePct=rng.range(arch.sizeMin,arch.sizeMax),maxSize=Math.min(W,H)*sizePct;
+  const thickness=maxSize*.7,numShapes=rng.int(arch.pillMin,arch.pillMax),tol=OVERLAP_TOL[arch.name];
+  const pills=[],placed=[];
+  for(let i=0;i<numShapes;i++){
+    const hl=maxSize/4,mg=thickness/2;let cx,cy,angle,ok=false;
+    for(let att=0;att<20;att++){angle=rng.range(0,Math.PI*2);const dx=Math.cos(angle)*hl,dy=Math.sin(angle)*hl;cx=rng.range(mg+Math.abs(dx),W-mg-Math.abs(dx));cy=rng.range(mg+Math.abs(dy),H-mg-Math.abs(dy));let bad=false;for(const p of placed)if(pillsOverlap(cx,cy,hl,thickness,p.cx,p.cy,p.hl,p.t,tol)){bad=true;break;}if(!bad){ok=true;break;}}
+    if(!ok){angle=rng.range(0,Math.PI*2);const dx=Math.cos(angle)*hl,dy=Math.sin(angle)*hl;cx=rng.range(mg+Math.abs(dx),W-mg-Math.abs(dx));cy=rng.range(mg+Math.abs(dy),H-mg-Math.abs(dy));}
+    placed.push({cx,cy,hl,t:thickness});
+    pills.push({cx,cy,hl,angle,color:rng.pickFrom(colors),style:pickFinish(rng,arch.name),thickness});
+  }
+  ctx.globalCompositeOperation='source-over';
+  for(const pill of pills){const x1=pill.cx-Math.cos(pill.angle)*pill.hl,y1=pill.cy-Math.sin(pill.angle)*pill.hl,x2=pill.cx+Math.cos(pill.angle)*pill.hl,y2=pill.cy+Math.sin(pill.angle)*pill.hl;drawPill(ctx,x1,y1,x2,y2,pill.thickness,pill.color,pill.style,rng,colors);}
+  applyGrain(ctx,W,H,colors);
+}
+
+const DRAWFNS = {plls:drawPLLS,krrtk:drawKRRTK,dtk:drawDTK,bzrs:drawBZRS,krrtkg:drawKRRTKG,dtkg:drawDTKG,pllsg:drawPLLSG};
+const LABELS  = {plls:'PLLS',krrtk:'KRRTK',dtk:'DTK',bzrs:'BZRS',krrtkg:'KRRTKG',dtkg:'DTKG',pllsg:'PLLSG'};
+const CRES    = {plls:[566,400],krrtk:[320,320],dtk:[320,320],bzrs:[320,320],krrtkg:[320,320],dtkg:[320,320],pllsg:[566,400]};
+const SERIES  = ['plls','krrtk','dtk','bzrs','krrtkg','dtkg','pllsg'];
 
 // ── GRID ─────────────────────────────────────────────────────────────────────
-const UNIT=178, GAP=5, COLS=6, ROWS=5;
-const BOARD_W=COLS*(UNIT+GAP), BOARD_H=ROWS*(UNIT+GAP);
-
+const GAP=5, COLS=9, ROWS=7;
 const wrap  = document.getElementById('wrap');
 const board = document.getElementById('board');
 const hint  = document.getElementById('hint');
+
+// UNIT fills viewport width exactly: COLS*UNIT + (COLS-1)*GAP = wrap.clientWidth
+// But we want no edge gap, so: COLS*(UNIT+GAP) - GAP = wrap.clientWidth
+// → UNIT = (wrap.clientWidth + GAP) / COLS - GAP
+const UNIT = Math.floor((wrap.clientWidth + GAP) / COLS - GAP);
+const BOARD_W = COLS*(UNIT+GAP) - GAP;  // exact viewport width
+const BOARD_H = ROWS*(UNIT+GAP) - GAP;
+
 board.style.width  = BOARD_W+'px';
 board.style.height = BOARD_H+'px';
 
-let panX = (BOARD_W - wrap.clientWidth)  / 2;
-let panY = (BOARD_H - wrap.clientHeight) / 2;
+// Start at top-left (no horizontal pan needed — grid is viewport-wide)
+let panX = 0;
+let panY = 0;
 let cellObjs = [];
 
 function updateBoard(){ board.style.transform = `translate3d(${-panX}px,${-panY}px,0)`; }
@@ -356,17 +351,11 @@ function buildGrid(works) {
 
     cell.addEventListener('click', () => {
       if (dragged) return;
-      if (!selected) {
-        selectCell(obj);
-      } else if (selected.type === obj.type) {
-        // Open the specific work if real, otherwise the series page
-        const url = obj.idx !== null
-          ? `${BASE}${obj.type==="plls"?"pills":obj.type}.html?i=${obj.idx}`
-          : `${BASE}${obj.type==="plls"?"pills":obj.type}.html`;
-        window.location.href = url;
-      } else {
-        selectCell(obj);
-      }
+      const page = obj.type === 'plls' ? 'pills' : obj.type; // pllsg stays as pllsg
+      const url = obj.idx !== null
+        ? `${BASE}${page}.html?i=${obj.idx}`
+        : `${BASE}${page}.html`;
+      window.location.href = url;
     });
 
     cell.addEventListener('mouseenter', ()=>{
@@ -392,59 +381,37 @@ function buildGrid(works) {
 }
 
 // ── LOAD REAL WORKS ───────────────────────────────────────────────────────────
+const TOTAL = 63; // 9 per series × 7 series
+const PER_SERIES = 9;
+
 async function load() {
   const fetches = SERIES.map(type =>
-    fetch(RAW + (type==='plls'?'plls':type) + '.json?t=' + Date.now())
+    fetch(RAW + type + '.json?t=' + Date.now())
       .then(r => r.ok ? r.json() : []).catch(() => [])
       .then(items => items.map((item, idx) => ({ ...item, type, idx })))
   );
   const results = await Promise.all(fetches);
-  const all = results.flat();
+
+  // Build pool: up to PER_SERIES real works per series, shuffled within each
+  const real = [];
+  results.forEach(items => {
+    const shuffled = [...items].sort(() => Math.random() - .5);
+    real.push(...shuffled.slice(0, PER_SERIES));
+  });
+
+  // Shuffle the combined real works
+  real.sort(() => Math.random() - .5);
+
+  // Pad to TOTAL with fallback generated works
+  const all = [...real];
+  let si = 0;
+  while (all.length < TOTAL) {
+    all.push({ type: SERIES[si % SERIES.length], fallback: true, seed: (Math.random() * 0xFFFFFFFF) >>> 0, idx: null });
+    si++;
+  }
+
   buildGrid(all);
 }
-
-// ── SELECTED STATE ────────────────────────────────────────────────────────────
-let selected = null;
-
-function panTo(tx, ty, dur=500) {
-  const sx=panX, sy=panY, t0=performance.now();
-  function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
-  function step(now){
-    const t=Math.min(1,(now-t0)/dur),e=ease(t);
-    panX=Math.max(0,Math.min(BOARD_W-wrap.clientWidth, sx+(tx-sx)*e));
-    panY=Math.max(0,Math.min(BOARD_H-wrap.clientHeight,sy+(ty-sy)*e));
-    updateBoard(); updateCells();
-    if(t<1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-
-function selectCell(obj) {
-  selected = obj;
-  document.getElementById('filter-bar-series').textContent = LABELS[obj.type];
-  document.getElementById('filter-bar').classList.add('visible');
-  hint.style.opacity = '0';
-  cellObjs.forEach(o => {
-    o.el.style.transition = 'opacity 0.4s ease, transform 0.55s cubic-bezier(0.23,1,0.32,1)';
-    o.el.style.opacity = o.type === obj.type ? '' : '0.1';
-    o.el.style.pointerEvents = o.type === obj.type ? 'auto' : 'none';
-  });
-  panTo(obj.cX - wrap.clientWidth/2, obj.cY - wrap.clientHeight/2);
-}
-
-function clearSelection() {
-  selected = null;
-  document.getElementById('filter-bar').classList.remove('visible');
-  cellObjs.forEach(o => {
-    o.el.style.transition = 'opacity 0.4s ease, transform 0.55s cubic-bezier(0.23,1,0.32,1)';
-    o.el.style.opacity = '';
-    o.el.style.pointerEvents = 'auto';
-  });
-  updateCells();
-}
-
-document.getElementById('filter-bar-clear').addEventListener('click', clearSelection);
-document.addEventListener('keydown', e => { if(e.key==='Escape') clearSelection(); });
 
 // ── DRAG ─────────────────────────────────────────────────────────────────────
 let dragging=false, startX, startY, startPX, startPY, dragged=false;
@@ -477,11 +444,6 @@ wrap.addEventListener('touchmove', e=>{
   updateBoard(); updateCells();
 },{passive:true});
 wrap.addEventListener('touchend', ()=>{ dragging=false; });
-
-wrap.addEventListener('click', e=>{
-  if(dragged) return;
-  if(selected && (e.target===wrap||e.target===board)) clearSelection();
-});
 
 load();
 </script>
