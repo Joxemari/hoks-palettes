@@ -434,18 +434,7 @@ function renderWorks() {
           <button onclick="saveWorkDesc(${i})" class="btn-preview">Save</button>
         </div>
         <textarea id="desc-${i}" class="code-editor" style="min-height:52px;background:var(--surface);color:var(--ink);border-color:var(--border);" placeholder="Describe this work...">${esc(w.description||'')}</textarea>
-        <div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-top:12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
-          <span>Draw Code (JS)</span>
-          <div style="display:flex;gap:6px;">
-            <button onclick="previewWork(${i})" class="btn-preview">&#9654; Preview</button>
-            <button onclick="saveWorkCode(${i})" class="btn-preview">Save Code</button>
-          </div>
-        </div>
-        <textarea id="code-${i}" class="code-editor" spellcheck="false" placeholder="// Paste your draw() function body here...">${esc(w.drawCode||'')}</textarea>
-        <div id="preview-wrap-${i}" style="display:none;margin-top:8px;">
-          <div style="font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Preview</div>
-          <canvas id="preview-canvas-${i}" width="300" height="300" style="border:1px solid var(--border);border-radius:2px;display:block;"></canvas>
-        </div>
+
       </div>
     </div>`).join('');
 }

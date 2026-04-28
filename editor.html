@@ -233,8 +233,9 @@ function runCode() {
   emptyHint.style.display = 'none';
 
   try {
-    const fn = new Function('ctx', 'W', 'H', 'seed', 'colors', 'Rng', code);
-    fn(ctx, W, H, currentSeed, colors, Rng);
+    // Pass both 'seed' and 's' so pills (which uses 's') and others both work
+    const fn = new Function('ctx', 'W', 'H', 'seed', 's', 'colors', 'Rng', code);
+    fn(ctx, W, H, currentSeed, currentSeed, colors, Rng);
     document.getElementById('seedDisplay').textContent = '#' + currentSeed;
     setStatus('Ran · seed #' + currentSeed);
   } catch(e) {
