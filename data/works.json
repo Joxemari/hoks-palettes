@@ -58,7 +58,7 @@
     "id": "bzrs",
     "name": "BZRS",
     "slug": "bzrs",
-    "active": true,
+    "active": false,
     "description": "Bezier curves. 750-1250 curves with gradient interpolation between two palette colors.",
     "page": "bzrs.html",
     "canvas": "600x600",
