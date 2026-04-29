@@ -3,7 +3,7 @@
     "id": "pills",
     "name": "PLLS",
     "slug": "pills",
-    "active": true,
+    "active": false,
     "description": "Generative pill shapes. Density archetypes, finish types, rarity system.",
     "page": "pills.html",
     "canvas": "1414x1000",
