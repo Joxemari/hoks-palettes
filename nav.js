@@ -14,6 +14,11 @@ nav {
 .nav-logo-dot { width: 14px; height: 14px; border-radius: 50%; background: #111; flex-shrink: 0; }
 .nav-logo-name { font-family: 'Courier New', Courier, monospace; font-size: 12px; font-weight: 400; letter-spacing: 0.08em; color: #111; }
 .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; margin: 0; padding: 0; }
+@media (max-width: 600px) {
+  .nav-links { gap: 1.2rem; }
+  .nav-links a, .nav-work-label { font-size: 10px; letter-spacing: 0.06em; }
+  nav { padding: 0 1rem; }
+}
 .nav-links a, .nav-work-label {
   font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: 400;
   letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
