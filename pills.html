@@ -330,10 +330,12 @@ function loadPalettes() {
     .then(data => {
       const active = data.filter(p => p.active !== false);
       palettes = normalizePalettes(active.length ? active : [...DEFAULTS]);
+      if(_isAdminSession) buildPalDropdown();
       if (!_isExact) scrambleAndDraw(currentSeed, () => draw(currentSeed));
     })
     .catch(() => {
       palettes = normalizePalettes([...DEFAULTS]);
+      if(_isAdminSession) buildPalDropdown();
       if (!_isExact) scrambleAndDraw(currentSeed, () => draw(currentSeed));
     });
 }
@@ -743,6 +745,7 @@ if(_urlIdx!==null){
 document.getElementById('c').addEventListener('click',generate);
 loadPalettes();
 loadGallery();
+checkAdminSession();
 checkBatchButton();
 setInterval(checkBatchButton, 3000);
 </script>

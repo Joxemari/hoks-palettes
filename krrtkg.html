@@ -330,6 +330,7 @@ function loadPalettes(){
     .then(data=>{
       const active=data.filter(p=>p.active!==false);
       palettes=normalizePalettes(active.length?active:[...DEFAULTS]);
+      if(_isAdminSession) buildPalDropdown();
       if(!_isExact)draw(currentSeed);
     })
     .catch(()=>{palettes=normalizePalettes([...DEFAULTS]);if(!(new URLSearchParams(window.location.search).get('i')))draw(currentSeed);});
@@ -626,6 +627,7 @@ if(_urlIdx!==null){const _wait=setInterval(()=>{if(gallery.length>0){clearInterv
 document.getElementById('c').addEventListener('click',generate);
 loadPalettes();
 loadGallery();
+checkAdminSession();
 checkBatchButton();
 setInterval(checkBatchButton,3000);
 </script>
