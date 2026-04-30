@@ -216,10 +216,10 @@ function drawPLLS(canvas,seed){
 }
 
 // ── DRAW: PLLSG (pills on mesh gradient + grain) ─────────────────────────────
+const PILL_ALPHA_G = 0.72;
 function drawPLLSG(canvas,seed){
   const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,rng=new Rng(seed);
   const arch=rng.weighted(ARCHETYPES),pal=getActivePalette(rng),colors=pal.colors;
-  // Mesh gradient background
   drawMesh(ctx,W,H,colors,new Rng(seed^0xDEADBEEF));
   const sizePct=rng.range(arch.sizeMin,arch.sizeMax),maxSize=Math.min(W,H)*sizePct;
   const thickness=maxSize*.7,numShapes=rng.int(arch.pillMin,arch.pillMax),tol=OVERLAP_TOL[arch.name];
@@ -232,7 +232,15 @@ function drawPLLSG(canvas,seed){
     pills.push({cx,cy,hl,angle,color:rng.pickFrom(colors),style:pickFinish(rng,arch.name),thickness});
   }
   ctx.globalCompositeOperation='source-over';
-  for(const pill of pills){const x1=pill.cx-Math.cos(pill.angle)*pill.hl,y1=pill.cy-Math.sin(pill.angle)*pill.hl,x2=pill.cx+Math.cos(pill.angle)*pill.hl,y2=pill.cy+Math.sin(pill.angle)*pill.hl;drawPill(ctx,x1,y1,x2,y2,pill.thickness,pill.color,pill.style,rng,colors);}
+  for(const pill of pills){
+    const x1=pill.cx-Math.cos(pill.angle)*pill.hl,y1=pill.cy-Math.sin(pill.angle)*pill.hl;
+    const x2=pill.cx+Math.cos(pill.angle)*pill.hl,y2=pill.cy+Math.sin(pill.angle)*pill.hl;
+    const [r,g,b]=hexToRgb(pill.color);
+    // Draw with alpha so gradient shows through
+    ctx.save();ctx.strokeStyle=`rgba(${r},${g},${b},${PILL_ALPHA_G})`;
+    ctx.lineWidth=pill.thickness;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore();
+  }
   applyGrain(ctx,W,H,colors);
 }
 
@@ -381,32 +389,45 @@ function buildGrid(works) {
 }
 
 // ── LOAD REAL WORKS ───────────────────────────────────────────────────────────
-const TOTAL = 63; // 9 per series × 7 series
+const TOTAL = 63;
 const PER_SERIES = 9;
+const SLUG_MAP = { pills:'plls', krrtk:'krrtk', dtk:'dtk', bzrs:'bzrs', krrtkg:'krrtkg', dtkg:'dtkg', pllsg:'pllsg' };
 
 async function load() {
-  const fetches = SERIES.map(type =>
+  // 1. Read works.json — filter to active families only
+  let activeSeries = SERIES; // fallback: show all
+  try {
+    const worksData = await fetch(RAW + 'works.json?t=' + Date.now()).then(r => r.ok ? r.json() : null);
+    if (Array.isArray(worksData) && worksData.length) {
+      const filtered = worksData
+        .filter(w => w.active)
+        .map(w => SLUG_MAP[w.slug] || w.slug)
+        .filter(s => SERIES.includes(s));
+      if (filtered.length) activeSeries = filtered;
+    }
+  } catch(e) {}
+
+  // 2. Fetch saved works for active families
+  const fetches = activeSeries.map(type =>
     fetch(RAW + type + '.json?t=' + Date.now())
       .then(r => r.ok ? r.json() : []).catch(() => [])
       .then(items => items.map((item, idx) => ({ ...item, type, idx })))
   );
   const results = await Promise.all(fetches);
 
-  // Build pool: up to PER_SERIES real works per series, shuffled within each
+  // 3. Up to PER_SERIES per family, shuffled
   const real = [];
   results.forEach(items => {
     const shuffled = [...items].sort(() => Math.random() - .5);
     real.push(...shuffled.slice(0, PER_SERIES));
   });
-
-  // Shuffle the combined real works
   real.sort(() => Math.random() - .5);
 
-  // Pad to TOTAL with fallback generated works
+  // 4. Pad to TOTAL with fallbacks (active families only)
   const all = [...real];
   let si = 0;
   while (all.length < TOTAL) {
-    all.push({ type: SERIES[si % SERIES.length], fallback: true, seed: (Math.random() * 0xFFFFFFFF) >>> 0, idx: null });
+    all.push({ type: activeSeries[si % activeSeries.length], fallback: true, seed: (Math.random() * 0xFFFFFFFF) >>> 0, idx: null });
     si++;
   }
 

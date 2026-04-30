@@ -75,23 +75,32 @@ nav.innerHTML = `
     <span class="nav-logo-dot"></span>
     <span class="nav-logo-name">hoks</span>
   </a>
+  <span id="nav-admin-badge" style="display:none;font-family:'Courier New',Courier,monospace;font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#c0392b;color:#fff;padding:2px 7px;border-radius:2px;cursor:pointer;" onclick="window.location.href='admin.html'">ADMIN</span>
   <ul class="nav-links">
     <li class="nav-work${isWork?' active':''}">
       <span class="nav-work-label" id="nav-work-label">Work</span>
       <ul class="nav-work-dropdown" id="nav-work-dropdown">
         <li><a href="pills.html"${path==='pills.html'?' class="active"':''}>PLLS</a></li>
-        <li><a href="pllsg.html"${path==='pllsg.html'?' class="active"':''}>PLLSG</a></li>
         <li><a href="krrtk.html"${path==='krrtk.html'?' class="active"':''}>KRRTK</a></li>
         <li><a href="dtk.html"${path==='dtk.html'?' class="active"':''}>DTK</a></li>
         <li><a href="bzrs.html"${path==='bzrs.html'?' class="active"':''}>BZRS</a></li>
         <li><a href="krrtkg.html"${path==='krrtkg.html'?' class="active"':''}>KRRTKG</a></li>
         <li><a href="dtkg.html"${path==='dtkg.html'?' class="active"':''}>DTKG</a></li>
+        <li><a href="pllsg.html"${path==='pllsg.html'?' class="active"':''}>PLLSG</a></li>
       </ul>
     </li>
     <li><a href="about.html"${isAbout?' class="active"':''}>About</a></li>
     <li><a href="palettes.html"${isPalettes?' class="active"':''}>Palettes</a></li>
   </ul>`;
 document.body.insertBefore(nav, document.body.firstChild);
+
+// Show ADMIN badge if session active
+const _isAdmin = sessionStorage.getItem('hoks-admin-session') === '1' ||
+                 localStorage.getItem('hoks-admin-session')   === '1';
+if (_isAdmin) {
+  const badge = document.getElementById('nav-admin-badge');
+  if (badge) badge.style.display = '';
+}
 
 const workLabel = document.getElementById('nav-work-label');
 const workDropdown = document.getElementById('nav-work-dropdown');

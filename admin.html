@@ -161,6 +161,24 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
 .preview-canvas-wrap canvas { width:180px;height:180px;border:1px solid var(--border);border-radius:2px;display:block; }
 .preview-label { font-size:9px;color:var(--ink3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px; }
 
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  header { padding: 0 1rem; }
+  .header-right { gap: 0.8rem; }
+  .tabs { padding: 0 1rem; }
+  .tab-content { padding: 1rem; }
+  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .palette-row { flex-wrap: wrap; gap: 8px; }
+  .palette-row .swatches { width: 100%; }
+  .batch-row { flex-direction: column; }
+  .batch-field { min-width: unset; width: 100%; }
+  .batch-thumbs { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+  .work-card { padding: 12px; }
+  .work-card-header { flex-wrap: wrap; gap: 8px; }
+  .modal-body { padding: 1rem; }
+  .modal { max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+}
 </style>
 </head>
 <body>
@@ -274,17 +292,16 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
               <option value="bzrs">BZRS</option>
               <option value="krrtkg">KRRTKG</option>
               <option value="dtkg">DTKG</option>
+              <option value="pllsg">PLLSG</option>
             </select>
           </div>
           <div class="batch-field">
             <label>Batch Name</label>
-            <input type="text" id="batch-name" placeholder="e.g. Spring 2026" style="cursor:text;user-select:text;">
+            <input type="text" id="batch-name" placeholder="e.g. Spring 2026">
           </div>
-          <div class="batch-field" style="max-width:180px;">
-            <label>Palette</label>
-            <select id="batch-palette" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;font-family:var(--f);font-size:11px;color:var(--ink);outline:none;">
-              <option value="random">Random (weighted)</option>
-            </select>
+          <div class="batch-field" style="max-width:90px">
+            <label>Target</label>
+            <input type="number" id="batch-target" value="30" min="1" max="200" placeholder="30">
           </div>
           <button class="btn" style="flex-shrink:0;align-self:flex-end" onclick="createBatch()">Create Batch</button>
         </div>
@@ -293,16 +310,16 @@ header { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-item
       <div id="active-batch-panel" style="display:none;margin-bottom:2rem;border:2px solid var(--ink);border-radius:3px;overflow:hidden;">
         <div style="padding:12px 14px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;">
           <div>
-            <span style="font-size:11px;font-weight:700;color:#fff;letter-spacing:0.06em;cursor:text;outline:none;border-bottom:1px solid rgba(255,255,255,0.2);" id="active-batch-title" contenteditable="true" title="Click to rename" onblur="renameBatch(this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">—</span>
+            <span style="font-size:11px;font-weight:700;color:#fff;letter-spacing:0.06em;" id="active-batch-title">—</span>
             <span style="font-size:9px;color:#888;margin-left:10px;letter-spacing:0.06em;" id="active-batch-work"></span>
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
-            <span class="batch-status">Selected: <span id="active-batch-count">0</span></span>
+            <span class="batch-status">Saved: <span id="active-batch-count">0</span> / <span id="active-batch-target">30</span></span>
             <button class="btn" style="background:#fff;color:var(--ink);font-size:9px;padding:6px 12px;" onclick="closeBatch()">Close Batch</button>
           </div>
         </div>
         <div style="padding:10px;">
-          <div style="font-size:9px;color:var(--ink3);letter-spacing:0.06em;margin-bottom:8px;">Go to <a id="active-batch-link" href="pills.html" target="_blank" style="color:var(--ink);text-decoration:underline;">PLLS</a>, generate iterations and click <strong>Save to Batch</strong> on the works you want to include.</div>
+          <div style="font-size:9px;color:var(--ink3);letter-spacing:0.06em;margin-bottom:8px;">Go to <a id="active-batch-link" href="pills.html" target="_blank" style="color:var(--ink);text-decoration:underline;">PLLS</a> · generate iterations · save the ones you like · discard the rest · keep going until you hit the target.</div>
           <div class="batch-thumbs" id="active-batch-thumbs"></div>
         </div>
       </div>
@@ -496,8 +513,8 @@ function openAddWorkModal() {
 
 // ── AUTH ──────────────────────────────────────────────
 function getStoredPwd(){return localStorage.getItem(PWD_KEY)||DEFAULT_PWD;}
-function tryLogin(){if($('pwd-input').value===getStoredPwd()){sessionStorage.setItem(SESSION_KEY,'1');showAdmin();}else{$('login-error').style.display='block';$('pwd-input').value='';$('pwd-input').focus();}}
-function logout(){sessionStorage.removeItem(SESSION_KEY);location.reload();}
+function tryLogin(){if($('pwd-input').value===getStoredPwd()){sessionStorage.setItem(SESSION_KEY,'1');localStorage.setItem(SESSION_KEY,'1');showAdmin();}else{$('login-error').style.display='block';$('pwd-input').value='';$('pwd-input').focus();}}
+function logout(){sessionStorage.removeItem(SESSION_KEY);localStorage.removeItem(SESSION_KEY);location.reload();}
 function showAdmin(){$('login-screen').style.display='none';$('admin-screen').style.display='block';loadAll();switchTab('works');}
 if(sessionStorage.getItem(SESSION_KEY)==='1')showAdmin();
 $('pwd-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
@@ -678,25 +695,17 @@ function addGalleryToBatch(work, idx) {
   toast(`Added #${item.seed} to batch "${active.name}"`);
 }
 
-function buildBatchPaletteDropdown(){
-  const sel=$('batch-palette');
-  if(!sel)return;
-  sel.innerHTML='<option value="random">Random (weighted)</option>'+
-    pals.filter(p=>p.active!==false).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
-}
-
 function createBatch(){
   const name=$('batch-name').value.trim();if(!name){toast('Add a batch name');return;}
   const work=$('batch-work').value;
+  const target=parseInt($('batch-target').value)||30;
   const active=getActiveBatch();
   if(active){if(!confirm('You have an open batch. Close it and start a new one?'))return;closeBatch();}
-  const palSel=$('batch-palette');
-  const palette=palSel?palSel.value:'random';
-  const batch={id:Date.now(),name,work,palette,items:[],created:Date.now()};
+  const batch={id:Date.now(),name,work,target,items:[],created:Date.now()};
   setActiveBatch(batch);
   $('batch-name').value='';
   renderBatches();
-  toast('Batch "'+name+'" started — go to '+work.toUpperCase()+' and save works');
+  toast('Batch "'+name+'" started (target: '+target+') — go to '+work.toUpperCase()+' and save works');
 }
 
 function closeBatch(){
@@ -730,44 +739,17 @@ function downloadBatch(id){
   toast('Downloading '+b.items.length+' files…');
 }
 
-
-function renameBatch(newName) {
-  if (!newName) return;
-  const active = getActiveBatch();
-  if (!active) return;
-  active.name = newName;
-  setActiveBatch(active);
-  // Also update in completed batches list if it's there
-  const batches = getBatches();
-  const existing = batches.find(b => b.id === active.id);
-  if (existing) { existing.name = newName; saveBatches(batches); }
-  renderBatches();
-  toast('Batch renamed to "' + newName + '"');
-}
-
-function renameSavedBatch(id, newName) {
-  if (!newName) return;
-  const batches = getBatches();
-  const b = batches.find(x => x.id === id);
-  if (!b) return;
-  b.name = newName;
-  saveBatches(batches);
-  // Also update active if same
-  const active = getActiveBatch();
-  if (active && active.id === id) { active.name = newName; setActiveBatch(active); }
-  toast('Batch renamed');
-}
-
 function renderBatches(){
   const active=getActiveBatch();
   const panel=$('active-batch-panel');
   if(active){
     panel.style.display='block';
-    const abt=$('active-batch-title'); if(!document.activeElement||document.activeElement!==abt) abt.textContent=active.name;
+    $('active-batch-title').textContent=active.name;
     $('active-batch-work').textContent=active.work.toUpperCase()+' · '+active.items.length+' item'+( active.items.length===1?'':'s');
     $('active-batch-count').textContent=active.items.length;
-    $('active-batch-link').href=active.work+'.html';
-    $('active-batch-link').textContent=active.work==='krrtk'?'KRRTK':'PLLS';
+    $('active-batch-target').textContent=active.target||30;
+    $('active-batch-link').href=(active.work==='pills'?'pills':active.work)+'.html';
+    $('active-batch-link').textContent=active.work.toUpperCase();
     $('active-batch-thumbs').innerHTML=active.items.length
       ?active.items.map((item,i)=>`<div class="batch-thumb"><img src="${item.dataUrl}"><div class="batch-thumb-label">#${item.seed}</div><button class="batch-thumb-del" onclick="removeBatchItem(${active.id},${i})">✕</button></div>`).join('')
       :'<div style="font-size:9px;color:var(--ink3);padding:8px;letter-spacing:0.06em;">No items yet — go generate and save to batch</div>';
@@ -782,7 +764,7 @@ function renderBatches(){
     <div class="batch-card">
       <div class="batch-header">
         <div>
-          <div class="batch-title" contenteditable="true" title="Click to rename" style="outline:none;border-bottom:1px dashed transparent;cursor:text;" onblur="renameSavedBatch(${b.id},this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();} event.stopPropagation();">${esc(b.name)}</div>
+          <div class="batch-title">${esc(b.name)}</div>
           <div class="batch-meta">${b.work.toUpperCase()} · ${b.items.length} work${b.items.length===1?'':'s'} · ${fmtDate(b.created)}</div>
         </div>
         <div class="batch-actions">

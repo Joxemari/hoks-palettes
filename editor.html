@@ -3,312 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>hoks — editor</title>
+<title>hoks — code editor</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #0f0f0f; --surface: #1a1a1a; --border: #2a2a2a;
-  --ink: #e8e8e8; --ink3: #555; --accent: #f5d216;
-  --f: 'Courier New', Courier, monospace;
-}
-body { font-family: var(--f); background: var(--bg); color: var(--ink); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+:root { --bg:#fff; --surface:#f7f7f7; --ink:#111; --ink3:#bbb; --border:#e8e8e8; --border-dark:#d0d0d0; --f:'Courier New',Courier,monospace; --r:2px; }
+body { font-family:var(--f); background:var(--bg); color:var(--ink); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+nav { display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; height:52px; flex-shrink:0; background:var(--bg); border-bottom:1px solid var(--border); }
+.nav-left { display:flex; align-items:center; gap:12px; }
+.nav-logo { display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink); }
+.nav-dot { width:12px; height:12px; border-radius:50%; background:var(--ink); }
+.nav-name { font-size:11px; letter-spacing:0.08em; }
+.nav-tag { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink3); }
+.nav-right { display:flex; gap:8px; align-items:center; }
+.nav-btn { font-family:var(--f); font-size:9px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; background:none; border:1px solid var(--border-dark); color:var(--ink); padding:5px 12px; cursor:pointer; border-radius:var(--r); text-decoration:none; transition:background 0.15s; }
+.nav-btn:hover { background:var(--surface); }
+.nav-btn.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+.nav-btn.primary:hover { opacity:0.8; }
 
-.header {
-  height: 44px; display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; border-bottom: 1px solid var(--border);
-  background: var(--surface); flex-shrink: 0;
-}
-.header-left { display: flex; align-items: center; gap: 12px; }
-.family-name { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; }
-.family-slug { font-size: 9px; color: var(--ink3); letter-spacing: 0.08em; }
-.header-right { display: flex; align-items: center; gap: 8px; }
-.btn {
-  font-family: var(--f); font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; border: none; border-radius: 2px;
-  padding: 7px 16px; cursor: pointer; transition: opacity 0.15s;
-}
-.btn:hover { opacity: 0.8; }
-.btn-run  { background: var(--accent); color: #000; }
-.btn-save { background: var(--ink); color: var(--bg); }
-.btn-ghost { background: transparent; color: var(--ink3); border: 1px solid var(--border); }
-.btn-ghost:hover { color: var(--ink); border-color: #555; opacity: 1; }
-.status { font-size: 9px; letter-spacing: 0.06em; min-width: 140px; text-align: right; color: var(--ink3); }
-.status.err { color: #ff6b6b; }
+#layout { display:flex; flex:1; overflow:hidden; }
 
-.layout { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
-.pane { display: flex; flex-direction: column; min-height: 0; }
-.pane + .pane { border-left: 1px solid var(--border); }
+#code-pane { width:55%; display:flex; flex-direction:column; border-right:1px solid var(--border); }
+#code-toolbar { display:flex; align-items:center; justify-content:space-between; padding:0 14px; height:40px; flex-shrink:0; border-bottom:1px solid var(--border); background:var(--surface); }
+#code-label { font-size:9px; color:var(--ink3); letter-spacing:0.1em; text-transform:uppercase; }
+#code-actions { display:flex; gap:6px; }
+.ed-btn { font-family:var(--f); font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; background:none; border:1px solid var(--border-dark); color:var(--ink); padding:3px 10px; cursor:pointer; border-radius:var(--r); transition:background 0.12s; }
+.ed-btn:hover { background:var(--bg); }
+.ed-btn.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+.ed-btn.primary:hover { opacity:0.8; }
 
-.pane-header {
-  height: 32px; display: flex; align-items: center; padding: 0 14px;
-  border-bottom: 1px solid var(--border); flex-shrink: 0;
-  font-size: 9px; color: var(--ink3); letter-spacing: 0.1em; text-transform: uppercase;
-  justify-content: space-between;
+#code { flex:1; width:100%; border:none; outline:none; resize:none; font-family:var(--f); font-size:11px; line-height:1.65; padding:14px 16px; background:var(--bg); color:var(--ink); tab-size:2; overflow-y:auto; }
+#code::placeholder { color:var(--ink3); }
+#save-status { padding:6px 14px; font-size:9px; color:var(--ink3); letter-spacing:0.06em; text-transform:uppercase; flex-shrink:0; border-top:1px solid var(--border); height:30px; display:flex; align-items:center; }
+
+#preview-pane { flex:1; display:flex; flex-direction:column; background:var(--surface); }
+#preview-toolbar { display:flex; align-items:center; justify-content:space-between; padding:0 14px; height:40px; border-bottom:1px solid var(--border); flex-shrink:0; }
+#seed-info { font-size:9px; color:var(--ink3); letter-spacing:0.08em; text-transform:uppercase; }
+#canvas-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:20px; overflow:hidden; }
+canvas { display:block; max-width:100%; max-height:100%; outline:1px solid rgba(0,0,0,0.1); }
+
+#error-bar { display:none; padding:6px 14px; font-size:10px; color:#c0392b; background:#fdf0f0; border-top:1px solid #f5c0c0; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(10px); background:var(--ink); color:#fff; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:8px 18px; opacity:0; transition:all 0.2s; pointer-events:none; z-index:99; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#gate { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:200; font-size:11px; color:var(--ink3); letter-spacing:0.1em; text-transform:uppercase; }
+
+/* ── MOBILE ── */
+@media (max-width: 680px) {
+  #layout { flex-direction: column; }
+  #code-pane { width: 100%; height: 50vh; border-right: none; border-bottom: 1px solid var(--border); }
+  #preview-pane { height: 50vh; }
+  #canvas-wrap { padding: 8px; }
+  canvas { max-height: 100%; }
 }
-#code {
-  flex: 1; width: 100%; resize: none; outline: none; border: none;
-  background: var(--bg); color: #e8e8e8;
-  font-family: var(--f); font-size: 12px; line-height: 1.7;
-  padding: 16px; tab-size: 2; overflow: auto;
-}
-.preview-pane { flex: 1; position: relative; overflow: hidden; background: #111; }
-#workFrame {
-  width: 100%; height: 100%; border: none;
-  display: block;
-}
-.frame-loading {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-  font-size: 9px; color: var(--ink3); letter-spacing: 0.1em; text-transform: uppercase;
-}
-.bottom-bar {
-  height: 36px; display: flex; align-items: center; padding: 0 14px; gap: 16px;
-  border-top: 1px solid var(--border); flex-shrink: 0;
-  font-size: 9px; color: var(--ink3);
-  background: var(--surface);
-}
-.seed-val { color: var(--ink); font-size: 10px; letter-spacing: 0.04em; }
-.error-bar {
-  display: none; padding: 8px 14px; background: #1a0808;
-  border-top: 1px solid #3a1010; font-size: 10px; color: #ff6b6b;
-  flex-shrink: 0; max-height: 80px; overflow-y: auto;
-}
-.error-bar.show { display: block; }
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="header-left">
-    <div>
-      <div class="family-name" id="familyName">—</div>
-      <div class="family-slug" id="familySlug"></div>
-    </div>
+
+<div id="gate">checking session…</div>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-logo" href="index.html"><span class="nav-dot"></span><span class="nav-name">hoks</span></a>
+    <span class="nav-tag" id="nav-tag">— · code</span>
   </div>
-  <div class="header-right">
-    <span class="status" id="status">Loading…</span>
-    <button class="btn btn-ghost" onclick="newSeed()">↻ Seed</button>
-    <button class="btn btn-run"  onclick="runCode()">▶ Run</button>
-    <button class="btn btn-save" onclick="saveCode()">↓ Save</button>
+  <div class="nav-right">
+    <a class="nav-btn" href="admin.html">← Admin</a>
+    <button class="nav-btn" id="regen-btn">↻ New Seed</button>
+    <button class="nav-btn primary" id="run-btn">▶ Run</button>
+  </div>
+</nav>
+
+<div id="layout">
+  <div id="code-pane">
+    <div id="code-toolbar">
+      <span id="code-label" style="font-size:9px;color:var(--ink3);letter-spacing:0.1em;text-transform:uppercase;">draw code</span>
+      <div id="code-actions">
+        <button class="ed-btn" id="clear-btn">Clear</button>
+        <button class="ed-btn primary" id="save-btn">Save to works.json</button>
+      </div>
+    </div>
+    <textarea id="code" spellcheck="false" autocorrect="off" autocapitalize="off"
+      placeholder="// Paste your draw function from OpenProcessing"></textarea>
+    <div id="error-bar"></div>
+    <div id="save-status">—</div>
+  </div>
+
+  <div id="preview-pane">
+    <div id="preview-toolbar">
+      <span id="seed-info">seed · —</span>
+    </div>
+    <div id="canvas-wrap"><canvas id="c"></canvas></div>
   </div>
 </div>
 
-<div class="layout">
-  <!-- CODE -->
-  <div class="pane">
-    <div class="pane-header">
-      <span>Draw algorithm · JS</span>
-      <span style="color:#333;">Cmd+Enter to run · Cmd+S to save</span>
-    </div>
-    <textarea id="code" spellcheck="false" placeholder="// Loading…"></textarea>
-    <div class="error-bar" id="errorBar"></div>
-  </div>
-
-  <!-- PREVIEW (iframe of actual work page) -->
-  <div class="pane">
-    <div class="pane-header">
-      <span>Preview</span>
-      
-    </div>
-    <div class="preview-pane">
-      <div class="frame-loading" id="frameLoading">Loading work…</div>
-      <iframe id="workFrame" style="opacity:0;"></iframe>
-    </div>
-    <div class="bottom-bar">
-      <span>Seed</span>
-      <span class="seed-val" id="seedDisplay">—</span>
-      <span style="margin-left:auto;font-size:9px;color:var(--ink3);">Random palette</span>
-    </div>
-  </div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-const RAW  = 'https://raw.githubusercontent.com/Joxemari/hoks/main/data/';
-const BASE = 'https://joxemari.github.io/hoks/';
-const GH_TOKEN_KEY = 'hoks-gh-token';
-const REPO = 'Joxemari/hoks';
+// ── AUTH ──────────────────────────────────────────────────────────
+const gate = document.getElementById('gate');
+const isAdmin = sessionStorage.getItem('hoks-admin-session') === '1' ||
+                localStorage.getItem('hoks-admin-session')   === '1';
+if (!isAdmin) { gate.textContent = 'Access denied — log in via admin first'; }
+else          { gate.style.display = 'none'; }
 
-const params   = new URLSearchParams(location.search);
-const familyId = params.get('family') || '';
-let works = [], currentWork = null, palettes = [];
-let frameReady = false;
+// ── SETUP ─────────────────────────────────────────────────────────
+const FAMILY   = new URLSearchParams(window.location.search).get('family') || 'krrtk';
+const REPO     = 'Joxemari/hoks';
+const GH_KEY   = 'hoks-gh-token';
+const RAW      = 'https://raw.githubusercontent.com/Joxemari/hoks/main/data/';
+const SIZES    = { plls:[1414,1000], pllsg:[1414,1000] };
+const [CW, CH] = SIZES[FAMILY] || [600, 600];
+
+document.getElementById('nav-tag').textContent = FAMILY.toUpperCase() + ' · code';
+document.title = 'hoks — ' + FAMILY.toUpperCase() + ' code';
+
+const canvas  = document.getElementById('c');
+canvas.width  = CW; canvas.height = CH;
+const ctx     = canvas.getContext('2d');
+const textarea = document.getElementById('code');
+const errorBar = document.getElementById('error-bar');
+const seedInfo = document.getElementById('seed-info');
+const saveStatus = document.getElementById('save-status');
+
+// ── RNG ───────────────────────────────────────────────────────────
+class Rng {
+  constructor(s){this.s=(s|0)>>>0;}
+  next(){this.s=((Math.imul(1664525,this.s)+1013904223)>>>0);return this.s/4294967296;}
+  int(a,b){return Math.floor(a+this.next()*(b-a+1));}
+  range(a,b){return a+this.next()*(b-a);}
+  bool(p){return this.next()<p;}
+  pickFrom(arr){return arr[this.int(0,arr.length-1)];}
+  weighted(arr){let v=this.next(),acc=0;for(const i of arr){acc+=i.prob;if(v<acc)return i;}return arr[arr.length-1];}
+}
+
+// ── LOAD saved code from works.json ──────────────────────────────
+async function loadSavedCode() {
+  try {
+    const works = await fetch(RAW+'works.json?t='+Date.now()).then(r=>r.ok?r.json():null);
+    if (!works) return;
+    const work = works.find(w => w.slug === FAMILY || (FAMILY==='plls' && w.slug==='pills'));
+    if (work && work.drawCode) {
+      textarea.value = work.drawCode;
+      saveStatus.textContent = 'Last saved · ' + (work.codeUpdated ? new Date(work.codeUpdated).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—');
+      run();
+    }
+  } catch(e) {}
+}
+
+// ── RUN ───────────────────────────────────────────────────────────
 let currentSeed = (Math.random() * 0xFFFFFFFF) >>> 0;
 
-// ── Init ──────────────────────────────────────────────
-async function init() {
+function run() {
+  if (!textarea.value.trim()) return;
+  errorBar.style.display = 'none';
   try {
-    [works, palettes] = await Promise.all([
-      fetch(RAW + 'works.json?t=' + Date.now()).then(r => r.json()),
-      fetch(RAW + 'palettes.json?t=' + Date.now()).then(r => r.json()).then(d => d.filter(p => p.active !== false))
-    ]);
-  } catch(e) { setStatus('Load error: ' + e.message, true); return; }
-
-  currentWork = works.find(w => w.id === familyId || w.slug === familyId);
-
-  if (currentWork) {
-    document.getElementById('familyName').textContent = currentWork.name;
-    document.getElementById('familySlug').textContent = currentWork.page || currentWork.slug + '.html';
-    document.title = 'hoks editor — ' + currentWork.name;
-
-    // Load draw code into textarea
-    const code = currentWork.drawCode || '';
-    document.getElementById('code').value = code;
-
-    // Load iframe with the actual work page
-    loadFrame();
-    setStatus('Ready');
-  } else {
-    document.getElementById('familyName').textContent = familyId ? 'Not found: ' + familyId : 'No family';
-    setStatus(familyId ? 'Family not in works.json' : 'Add ?family=slug to URL', true);
-  }
-}
-
-// ── Frame ─────────────────────────────────────────────
-function loadFrame() {
-  const frame = document.getElementById('workFrame');
-  const page  = currentWork.page || currentWork.slug + '.html';
-  frame.onload = onFrameLoad;
-  frame.src = BASE + page;
-}
-
-function onFrameLoad() {
-  const frame = document.getElementById('workFrame');
-  document.getElementById('frameLoading').style.display = 'none';
-  frame.style.opacity = '1';
-  frameReady = true;
-
-  // Inject palette list into iframe
-  try {
-    const fw = frame.contentWindow;
-    if (palettes.length && fw.palettes !== undefined) {
-      // Wait for iframe palettes to load, then auto-run
-      const check = setInterval(() => {
-        if (fw.palettes && fw.palettes.length > 0) {
-          clearInterval(check);
-          setStatus('Ready — press ▶ Run');
-        }
-      }, 200);
-      setTimeout(() => clearInterval(check), 5000);
-    }
-  } catch(e) {} // cross-origin guard
-}
-
-// ── Run ───────────────────────────────────────────────
-function runCode() {
-  if (!frameReady) { setStatus('Frame not ready yet', true); return; }
-  const code = document.getElementById('code').value.trim();
-  if (!code) { setStatus('No code to run', true); return; }
-
-  const frame = document.getElementById('workFrame');
-  try {
-    const fw = frame.contentWindow;
-
-    // Override the draw function in the iframe with editor code
-    // We wrap it so it has access to all the iframe's globals
-    const slug = currentWork.slug;
-
-    // Different draw signatures for different families
-    const paramName = slug === 'pills' ? 's' : 'seed';
-    const drawFnSrc = `(function() {
-      window._editorDraw = function(${paramName}) {
-        ${code}
-      };
-      // Override the page's draw function
-      window.draw = window._editorDraw;
-    })()`;
-
-    fw.eval(drawFnSrc);
-
-    // Set seed
-    fw.currentSeed = currentSeed;
-
-    // Trigger draw via scrambleAndDraw
-    if (typeof fw.scrambleAndDraw === 'function') {
-      fw._generating = false;
-      fw.scrambleAndDraw(currentSeed, () => fw.draw(currentSeed));
-    } else if (typeof fw.draw === 'function') {
-      fw._generating = false;
-      fw.draw(currentSeed);
-    }
-
-    document.getElementById('seedDisplay').textContent = '#' + currentSeed;
-    document.getElementById('errorBar').classList.remove('show');
-    setStatus('Ran · #' + currentSeed);
+    const fn = new Function('ctx','W','H','seed','Rng', textarea.value + '\n; draw(ctx,W,H,seed,Rng);');
+    ctx.clearRect(0,0,CW,CH);
+    fn(ctx, CW, CH, currentSeed, Rng);
+    seedInfo.textContent = 'seed · #' + currentSeed;
   } catch(e) {
-    document.getElementById('errorBar').textContent = e.toString();
-    document.getElementById('errorBar').classList.add('show');
-    setStatus('Error — see below', true);
+    errorBar.style.display = 'block';
+    errorBar.textContent = '⚠ ' + e.message;
   }
 }
 
-function newSeed() {
+document.getElementById('run-btn').addEventListener('click', run);
+document.getElementById('regen-btn').addEventListener('click', () => {
   currentSeed = (Math.random() * 0xFFFFFFFF) >>> 0;
-  runCode();
+  run();
+});
+document.getElementById('clear-btn').addEventListener('click', () => {
+  if (textarea.value && !confirm('Clear code?')) return;
+  textarea.value = '';
+  ctx.clearRect(0,0,CW,CH);
+  errorBar.style.display = 'none';
+  seedInfo.textContent = 'seed · —';
+});
+
+textarea.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); run(); }
+  if (e.key === 'Tab') { e.preventDefault(); const s=textarea.selectionStart,end=textarea.selectionEnd; textarea.value=textarea.value.substring(0,s)+'  '+textarea.value.substring(end); textarea.selectionStart=textarea.selectionEnd=s+2; }
+});
+
+// ── SAVE to works.json via GitHub API ────────────────────────────
+async function ghRead(path) {
+  const token = localStorage.getItem(GH_KEY); if (!token) return null;
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { headers:{'Authorization':'Bearer '+token} });
+  if (!r.ok) return null;
+  const j = await r.json();
+  return { content: JSON.parse(atob(j.content.replace(/\n/g,''))), sha: j.sha };
 }
 
-// ── Palette ───────────────────────────────────────────
-function buildPalSelect() {
-  const sel = document.getElementById('palSelect');
-  sel.innerHTML = palettes.map((p,i) =>
-    `<option value="${i}">${p.name}</option>`).join('');
-  document.getElementById('palInfo').textContent = palettes.length + ' palettes';
+async function ghWrite(path, content, sha) {
+  const token = localStorage.getItem(GH_KEY); if (!token) { toast('No GitHub token — set one in Admin'); return false; }
+  const body = { message:'update '+path, content: btoa(unescape(encodeURIComponent(JSON.stringify(content,null,2)))) };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { method:'PUT', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  return r.ok;
 }
 
-
-// ── Save ──────────────────────────────────────────────
-async function saveCode() {
-  const token = localStorage.getItem(GH_TOKEN_KEY);
-  if (!token) { setStatus('No GitHub token — log in to admin first', true); return; }
-  if (!currentWork) { setStatus('No work loaded', true); return; }
-
-  currentWork.drawCode = document.getElementById('code').value;
-
+document.getElementById('save-btn').addEventListener('click', async () => {
+  const code = textarea.value.trim();
+  if (!code) { toast('Nothing to save'); return; }
+  saveStatus.textContent = 'Saving…';
   try {
-    setStatus('Saving…');
-    let sha;
-    try {
-      const r = await fetch(`https://api.github.com/repos/${REPO}/contents/data/works.json`,
-        {headers:{'Authorization':'Bearer '+token}});
-      if (r.ok) sha = (await r.json()).sha;
-    } catch(e) {}
-
-    const body = {
-      message: `editor: update ${currentWork.name} draw code`,
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(works, null, 2))))
-    };
-    if (sha) body.sha = sha;
-
-    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/data/works.json`, {
-      method: 'PUT',
-      headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    });
-
-    setStatus(r.ok ? ('Saved ✓ ' + new Date().toLocaleTimeString()) : ('Save failed ' + r.status), !r.ok);
-  } catch(e) { setStatus('Save error: ' + e.message, true); }
-}
-
-function setStatus(msg, isErr = false) {
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  el.className = 'status' + (isErr ? ' err' : '');
-}
-
-// ── Keyboard ──────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === 'Enter') { e.preventDefault(); runCode(); }
-  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); saveCode(); }
-  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'Enter') { e.preventDefault(); newSeed(); }
+    const result = await ghRead('data/works.json');
+    if (!result) { toast('Could not read works.json'); saveStatus.textContent = 'Save failed'; return; }
+    const { content: works, sha } = result;
+    const slug = FAMILY === 'plls' ? 'pills' : FAMILY;
+    const idx = works.findIndex(w => w.slug === slug);
+    if (idx === -1) { toast('Family "'+slug+'" not found in works.json — add it via Admin first'); saveStatus.textContent = 'Not found'; return; }
+    works[idx].drawCode = code;
+    works[idx].codeUpdated = Date.now();
+    const ok = await ghWrite('data/works.json', works, sha);
+    if (ok) {
+      toast('Code saved to works.json');
+      saveStatus.textContent = 'Saved · ' + new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    } else {
+      toast('Save failed — check token');
+      saveStatus.textContent = 'Save failed';
+    }
+  } catch(e) { toast('Error: '+e.message); saveStatus.textContent = 'Error'; }
 });
 
-document.getElementById('code').addEventListener('keydown', e => {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const el = e.target, s = el.selectionStart, end = el.selectionEnd;
-    el.value = el.value.substring(0,s) + '  ' + el.value.substring(end);
-    el.selectionStart = el.selectionEnd = s + 2;
-  }
-});
-
-init();
+// ── INIT ──────────────────────────────────────────────────────────
+if (isAdmin) loadSavedCode();
 </script>
 </body>
 </html>

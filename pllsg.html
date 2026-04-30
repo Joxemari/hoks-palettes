@@ -20,7 +20,36 @@ body { font-family: var(--f); background: var(--bg); color: var(--ink); min-heig
 .btn:hover { opacity: 0.75; }
 .btn-outline { background: transparent; color: var(--ink); border: 1px solid var(--border-dark); }
 .btn-outline:hover { background: var(--surface); opacity: 1; }
-.seed-display { font-family: var(--f); font-size: 10px; color: var(--ink3); padding: 5px 8px; background: var(--surface); border-radius: var(--r); border: 1px solid var(--border); letter-spacing: 0.04em; }
+/* custom palette dropdown */
+.pal-dropdown { position:relative; width:100%; }
+.pal-trigger {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:7px 10px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r); cursor:pointer; font-size:10px; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--ink); transition:border-color 0.15s;
+}
+.pal-trigger:hover { border-color:var(--border-dark); }
+.pal-trigger-left { display:flex; align-items:center; gap:7px; }
+.pal-trigger-dots { display:flex; gap:2px; align-items:center; }
+.pal-trigger-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; border:0.5px solid rgba(0,0,0,0.1); }
+.pal-trigger-name { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; }
+.pal-trigger-arrow { color:var(--ink3); font-size:9px; }
+.pal-list {
+  display:none; position:absolute; top:calc(100% + 3px); left:0; right:0;
+  background:var(--bg); border:1px solid var(--border-dark); border-radius:var(--r);
+  z-index:50; max-height:220px; overflow-y:auto;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+.pal-list.open { display:block; }
+.pal-option {
+  display:flex; align-items:center; gap:7px; padding:7px 10px;
+  cursor:pointer; transition:background 0.1s;
+}
+.pal-option:hover { background:var(--surface); }
+.pal-option.selected { background:var(--surface); }
+.pal-option-dots { display:flex; gap:2px; align-items:center; }
+.pal-option-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; border:0.5px solid rgba(0,0,0,0.1); }
+.pal-option-name { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink); }
 .trait-list { display: flex; flex-direction: column; gap: 5px; }
 .trait-row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 10px; gap: 4px; flex-wrap: wrap; }
 .trait-key { color: var(--ink3); flex-shrink: 0; text-transform: uppercase; font-size: 9px; letter-spacing: 0.07em; min-width: 56px; padding-top: 2px; }
@@ -35,7 +64,7 @@ body { font-family: var(--f); background: var(--bg); color: var(--ink); min-heig
 .overall-row { margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
 .overall-label { font-size: 9px; color: var(--ink3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
 .canvas-area { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; gap: 0.8rem; background: var(--surface); min-height: calc(100vh - 52px); }
-canvas { display: block; height: min(56vh, 560px); width: min(79vh, 793px); cursor: pointer; outline: 1px solid rgba(0,0,0,0.12); }
+canvas { display: block; height: min(72vh, 580px); width: auto; max-width: calc(100vw - 280px); cursor: pointer; outline: 1px solid rgba(0,0,0,0.12); }
 .canvas-hint { font-family: var(--f); font-size: 9px; color: var(--ink3); letter-spacing: 0.1em; text-transform: uppercase; }
 .gallery-section { border-top: 1px solid var(--border); padding: 1.5rem 2rem; }
 .gallery-title { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); margin-bottom: 1rem; }
@@ -46,6 +75,38 @@ canvas { display: block; height: min(56vh, 560px); width: min(79vh, 793px); curs
 .gallery-thumb-seed { font-size: 9px; font-family: var(--f); color: var(--ink3); padding: 4px 6px; background: var(--bg); letter-spacing: 0.04em; text-transform: uppercase; }
 .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: #fff; font-family: var(--f); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 9px 18px; border-radius: 2px; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 100; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MOBILE ── */
+@media (max-width: 680px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .sidebar {
+    position: static;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    padding: 0.8rem 1rem;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+  .sidebar-section { min-width: 140px; flex: 1; }
+  .sidebar-section:first-child {
+    display: flex; flex-direction: row; flex-wrap: wrap;
+    gap: 6px; width: 100%; min-width: unset;
+  }
+  .sidebar-section:first-child .btn {
+    flex: 1; min-width: 80px; padding: 8px 6px; font-size: 9px;
+  }
+  .canvas-area { padding: 0.8rem; min-height: 40vh; }
+  canvas { height: auto !important; width: 100% !important; max-width: 100%; }
+  .gallery-section { padding: 1rem; }
+  .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+}
 </style>
 </head>
 <body>
@@ -60,12 +121,21 @@ canvas { display: block; height: min(56vh, 560px); width: min(79vh, 793px); curs
       <button class="btn btn-outline" onclick="downloadHD()">↓ Download PNG</button>
     </div>
     <div class="sidebar-section" id="paletteSelectorSection" style="display:none">
-      <div class="sidebar-label" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>Palette</span>
-        <button id="palLockBtn" onclick="togglePaletteLock()" title="Lock palette" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--ink3);padding:0;line-height:1;transition:color 0.15s;">🔓</button>
+      <div class="sidebar-label">Palette</div>
+      <button onclick="togglePaletteLock()" id="palLockBtn" style="font-family:var(--f);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--border-dark);border-radius:20px;padding:3px 10px;cursor:pointer;background:var(--surface);color:var(--ink3);width:fit-content;transition:all 0.15s;">RANDOM</button>
+      <div id="palSelectWrap" style="display:none;flex-direction:column;gap:4px;">
+        <div class="pal-dropdown" id="palDropdown">
+          <div class="pal-trigger" id="palTrigger" onclick="togglePalList()">
+            <div class="pal-trigger-left">
+              <div class="pal-trigger-dots" id="palTriggerDots"></div>
+              <span class="pal-trigger-name" id="palTriggerName">—</span>
+            </div>
+            <span class="pal-trigger-arrow">▾</span>
+          </div>
+          <div class="pal-list" id="palList"></div>
+        </div>
+        <div id="palSelectorPreview" style="height:10px;border-radius:2px;overflow:hidden;border:1px solid var(--border);display:flex;"></div>
       </div>
-      <select id="palSelectDropdown" onchange="onManualPalChange()" style="display:none;font-family:var(--f);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;color:var(--ink);outline:none;cursor:pointer;width:100%;"></select>
-      <div id="palSelectorPreview" style="display:none;height:8px;border-radius:2px;overflow:hidden;border:1px solid var(--border);display:flex;"></div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Seed</div>
@@ -313,11 +383,72 @@ function loadPalettes(){
 
 // ── PALETTE LOCK ──────────────────────────────────────
 let _paletteLocked=false,_lockedPalIdx=0,_isAdminSession=false;
-function checkAdminSession(){_isAdminSession=sessionStorage.getItem('hoks-admin-session')==='1';if(_isAdminSession){const sec=document.getElementById('paletteSelectorSection');if(sec)sec.style.display='';buildPalDropdown();}}
-function buildPalDropdown(){const sel=document.getElementById('palSelectDropdown');if(!sel||!palettes.length)return;sel.innerHTML=palettes.map((p,i)=>`<option value="${i}">${p.name}</option>`).join('');sel.value=_lockedPalIdx;updatePalPreviewBar();}
-function togglePaletteLock(){_paletteLocked=!_paletteLocked;const btn=document.getElementById('palLockBtn'),sel=document.getElementById('palSelectDropdown'),prev=document.getElementById('palSelectorPreview');if(btn)btn.textContent=_paletteLocked?'🔒':'🔓';if(sel)sel.style.display=_paletteLocked?'':'none';if(prev)prev.style.display=_paletteLocked?'':'none';if(_paletteLocked)buildPalDropdown();}
-function onManualPalChange(){const sel=document.getElementById('palSelectDropdown');if(sel)_lockedPalIdx=parseInt(sel.value);updatePalPreviewBar();}
-function updatePalPreviewBar(){const prev=document.getElementById('palSelectorPreview');if(!prev||!palettes[_lockedPalIdx])return;prev.innerHTML=palettes[_lockedPalIdx].colors.map(c=>`<span style="flex:1;background:${c}"></span>`).join('');}
+function checkAdminSession(){_isAdminSession=sessionStorage.getItem('hoks-admin-session')==='1'||localStorage.getItem('hoks-admin-session')==='1';if(_isAdminSession){const sec=document.getElementById('paletteSelectorSection');if(sec)sec.style.display='';}}
+function dotsHtml(colors, max=6) {
+  return colors.slice(0, max).map(c =>
+    `<span class="pal-option-dot" style="background:${c}"></span>`
+  ).join('');
+}
+
+function buildPalDropdown() {
+  const list = document.getElementById('palList');
+  if (!list || !palettes.length) return;
+  list.innerHTML = palettes.map((p, i) => `
+    <div class="pal-option${i===_lockedPalIdx?' selected':''}" data-idx="${i}" onclick="selectPal(${i})">
+      <div class="pal-option-dots">${dotsHtml(p.colors)}</div>
+      <span class="pal-option-name">${p.name}</span>
+    </div>`).join('');
+  updatePalTrigger();
+}
+
+function selectPal(idx) {
+  _lockedPalIdx = idx;
+  // Update selected state
+  document.querySelectorAll('.pal-option').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('palList').classList.remove('open');
+  updatePalTrigger();
+  updatePalPreviewBar();
+}
+
+function togglePalList() {
+  document.getElementById('palList').classList.toggle('open');
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  const dd = document.getElementById('palDropdown');
+  if (dd && !dd.contains(e.target)) {
+    document.getElementById('palList')?.classList.remove('open');
+  }
+});
+
+function togglePaletteLock() {
+  _paletteLocked = !_paletteLocked;
+  const btn  = document.getElementById('palLockBtn');
+  const wrap = document.getElementById('palSelectWrap');
+  if (btn) { btn.textContent=_paletteLocked?'SPECIFIC':'RANDOM'; btn.style.background=_paletteLocked?'var(--ink)':'var(--surface)'; btn.style.color=_paletteLocked?'#fff':'var(--ink3)'; btn.style.borderColor=_paletteLocked?'var(--ink)':'var(--border-dark)'; }
+  if (wrap) wrap.style.display = _paletteLocked ? 'flex' : 'none';
+  if (_paletteLocked) buildPalDropdown();
+}
+
+function onManualPalChange() { /* handled by selectPal */ }
+
+function updatePalTrigger() {
+  const pal = palettes[_lockedPalIdx];
+  if (!pal) return;
+  const dotsEl = document.getElementById('palTriggerDots');
+  const nameEl = document.getElementById('palTriggerName');
+  if (dotsEl) dotsEl.innerHTML = pal.colors.slice(0,6).map(c => `<span class="pal-trigger-dot" style="background:${c}"></span>`).join('');
+  if (nameEl) nameEl.textContent = pal.name;
+}
+
+function updatePalPreviewBar() {
+  const prev = document.getElementById('palSelectorPreview');
+  if (!prev || !palettes[_lockedPalIdx]) return;
+  prev.innerHTML = palettes[_lockedPalIdx].colors.map(c => `<span style="flex:1;background:${c}"></span>`).join('');
+}
 function getActivePalette(rng){if(_paletteLocked&&palettes[_lockedPalIdx])return palettes[_lockedPalIdx];return rng?rng.weighted(palettes):palettes[Math.floor(Math.random()*palettes.length)];}
 
 // ── DRAW ──────────────────────────────────────────────
