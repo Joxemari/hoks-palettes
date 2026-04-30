@@ -76,11 +76,13 @@ const isPalettes = path === 'palettes.html';
 
 const nav = document.createElement('nav');
 nav.innerHTML = `
-  <a class="nav-logo" href="index.html">
-    <span class="nav-logo-dot"></span>
-    <span class="nav-logo-name">hoks</span>
-  </a>
-  <span id="nav-admin-badge" style="display:none;font-family:'Courier New',Courier,monospace;font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#c0392b;color:#fff;padding:2px 7px;border-radius:2px;cursor:pointer;" onclick="window.location.href='admin.html'">ADMIN</span>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a class="nav-logo" href="index.html">
+      <span class="nav-logo-dot"></span>
+      <span class="nav-logo-name">hoks</span>
+    </a>
+    <span id="nav-admin-badge" style="display:none;font-family:'Courier New',Courier,monospace;font-size:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:#c0392b;color:#fff;padding:2px 7px;border-radius:2px;cursor:pointer;" onclick="window.location.href='admin.html'">ADMIN</span>
+  </div>
   <ul class="nav-links">
     <li class="nav-work${isWork?' active':''}">
       <span class="nav-work-label" id="nav-work-label">Work</span>
