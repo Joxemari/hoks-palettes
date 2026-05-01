@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>hoks — about</title>
+<meta name="description" content="Joxemari Gallastegi is a generative artist based in Donostia. Generative art systems built with code and controlled randomness.">
+<meta property="og:title" content="hoks — about">
+<meta property="og:description" content="Joxemari Gallastegi is a generative artist based in Donostia. Generative art systems built with code and controlled randomness.">
+<meta property="og:image" content="https://joxemari.github.io/hoks/preview.png">
+<meta property="og:url" content="https://joxemari.github.io/hoks/about.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="hoks — about">
+<meta name="twitter:description" content="Generative art systems built with code and controlled randomness.">
+<meta name="twitter:image" content="https://joxemari.github.io/hoks/preview.png">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #fff; color: #111; }
@@ -13,7 +23,7 @@ body { background: #fff; color: #111; }
   font-size: clamp(0.9rem, 1.8vw, 1.1rem);
   font-weight: 400; line-height: 1.8; color: #111;
   margin-bottom: 3rem; letter-spacing: 0.01em;
-  visibility: hidden; /* hidden until loaded to prevent flash */
+  visibility: hidden;
 }
 .about-contact {
   font-family: 'Courier New', Courier, monospace;
@@ -32,14 +42,15 @@ body { background: #fff; color: #111; }
   </div>
 </main>
 <script>
-// Fetch site.json and reveal content only when ready — no flash
+const FALLBACK = 'Joxemari Gallastegi is a generative artist based in Donostia. He studied at Stanford University, where he presented his first solo exhibition. His work explores the intersection of code and visual form — algorithmic systems built on geometry, colour, and controlled randomness that make each piece unique by design.';
+
 fetch('https://raw.githubusercontent.com/Joxemari/hoks/main/data/site.json?t=' + Date.now())
   .then(r => r.ok ? r.json() : null)
   .then(d => {
     const t = document.getElementById('about-text');
     const c = document.getElementById('about-contact');
     if (t) {
-      t.textContent = d?.aboutText || 'Joxemari Gallastegi is a generative artist based in Donostia and Palo Alto. His work is characterised by bold form, vibrant colour, and the beauty of controlled randomness.';
+      t.textContent = d?.aboutText || FALLBACK;
       t.style.visibility = 'visible';
     }
     if (c && d?.footerEmail) {
@@ -48,10 +59,7 @@ fetch('https://raw.githubusercontent.com/Joxemari/hoks/main/data/site.json?t=' +
   })
   .catch(() => {
     const t = document.getElementById('about-text');
-    if (t) {
-      t.textContent = 'Joxemari Gallastegi is a generative artist based in Donostia and Palo Alto.';
-      t.style.visibility = 'visible';
-    }
+    if (t) { t.textContent = FALLBACK; t.style.visibility = 'visible'; }
   });
 </script>
 </body>

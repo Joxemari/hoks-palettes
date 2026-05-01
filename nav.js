@@ -101,7 +101,6 @@ nav.innerHTML = `
   </ul>`;
 document.body.insertBefore(nav, document.body.firstChild);
 
-// Show ADMIN badge if session active
 const _isAdmin = sessionStorage.getItem('hoks-admin-session') === '1' ||
                  localStorage.getItem('hoks-admin-session')   === '1';
 if (_isAdmin) {
@@ -119,13 +118,28 @@ if (workLabel && workDropdown) {
 
 document.querySelectorAll('main, #main-content, .about-wrap, .work-section').forEach(el => el.style.flex = '1');
 
+// Footer — Instagram aparece solo cuando esté configurado en site.json
 const footer = document.createElement('footer');
 footer.className = 'site-footer';
 footer.innerHTML = `
   <span class="footer-copy">© 2026 hoks</span>
-  <div class="footer-links">
+  <div class="footer-links" id="footer-links">
     <a href="mailto:joxemgallastegi@gmail.com">Contact</a>
-    <a href="https://instagram.com" target="_blank">Instagram</a>
   </div>`;
 document.body.appendChild(footer);
+
+fetch('https://raw.githubusercontent.com/Joxemari/hoks/main/data/site.json?t=' + Date.now())
+  .then(r => r.ok ? r.json() : null)
+  .then(d => {
+    const fl = document.getElementById('footer-links');
+    if (fl && d?.footerInstagram) {
+      const a = document.createElement('a');
+      a.href = d.footerInstagram;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = 'Instagram';
+      fl.appendChild(a);
+    }
+  })
+  .catch(() => {});
 })();
