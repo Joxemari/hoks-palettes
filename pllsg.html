@@ -480,9 +480,7 @@ let _generating = false;
 function draw(seed) {
   if(!palettes.length||_generating)return;
   _generating=true;
-  try {
-
-  const canvas=document.getElementById('c');
+  try {('c');
   const ctx=canvas.getContext('2d');
   const W=canvas.width,H=canvas.height;
   const rng=new Rng(seed);
@@ -549,11 +547,7 @@ function draw(seed) {
   const grain=bakeGrain(W,H,colors,GRAIN_SCALE);
   applyGrain(ctx,W,H,grain);
 
-  } catch(e) {
-    _generating=false;
-    console.error('PLLSG draw error:', e);
-    throw e;
-  }
+  } catch(e){ _generating=false; console.error("PLLSG:",e); return; }
   _generating=false;
 
   // ── TRAITS ──────────────────────────────────────────
