@@ -177,21 +177,24 @@ const GRAIN_MAG     = 1.0;
 const GRAIN_AMIN    = 0.4;
 const GRAIN_AMAX    = 0.8;
 const GRAIN_SAMPLES = 3;
+const GRAIN_SCALE   = 1.0;
 
 // ── PLLS-SPECIFIC ─────────────────────────────────────
 const ARCHETYPES = [
-  { name:'Scattered', prob:0.60, sizeMin:0.30, sizeMax:0.45, pillMin:5,  pillMax:12 },
-  { name:'Dense',     prob:0.25, sizeMin:0.20, sizeMax:0.35, pillMin:10, pillMax:20 },
-  { name:'Solo',      prob:0.15, sizeMin:0.40, sizeMax:0.60, pillMin:1,  pillMax:4  },
+  { name:'Scattered',  prob:0.52, pillMin:5,  pillMax:8  },
+  { name:'Dense',      prob:0.25, pillMin:11, pillMax:22 },
+  { name:'Solo',       prob:0.20, pillMin:2,  pillMax:3  },
+  { name:'Monumental', prob:0.03, pillMin:1,  pillMax:1  },
 ];
 const FINISH_PROBS = {
-  Solo:      { solid:0.38, multiply:0.38, translucent:0.08, outline:0.08, grain:0.04, gradient:0.04 },
-  Scattered: { solid:0.425,multiply:0.425,translucent:0.0375,outline:0.0375,grain:0.0375,gradient:0.0375 },
-  Dense:     { solid:0.46, multiply:0.46, translucent:0.02, outline:0.01, grain:0.025,gradient:0.025 },
+  Solo:        { solid:0.34, blnd:0.34, translucent:0.15, outline:0.05, chess:0.03, gradient:0.05, ribbed:0.04 },
+  Scattered:   { solid:0.34, blnd:0.34, translucent:0.15, outline:0.05, chess:0.03, gradient:0.05, ribbed:0.04 },
+  Dense:       { solid:0.34, blnd:0.34, translucent:0.15, outline:0.05, chess:0.03, gradient:0.05, ribbed:0.04 },
+  Monumental:  { solid:0.34, blnd:0.34, translucent:0.15, outline:0.05, chess:0.03, gradient:0.05, ribbed:0.04 },
 };
 const OVERLAP_TOL   = { Solo:0.15, Scattered:0.35, Dense:0.60 };
 const PLACEMENT_ATT = 20;
-const GRAIN_TILE    = 16;
+const GRAIN_TILE    = 14;
 
 // ── PALETTE UTILS ─────────────────────────────────────
 function ageWeight(c){if(!c||c<1000000000000)return 4;const d=(Date.now()-c)/86400000;if(d<30)return 4;if(d<90)return 2;if(d<180)return 1;if(d<365)return 0.4;return 0.15;}
