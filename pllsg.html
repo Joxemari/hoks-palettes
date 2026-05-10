@@ -475,12 +475,11 @@ let _generating = false;
 
 
 // ── DRAW ──────────────────────────────────────────────
-let _generating = false;
-
 function draw(seed) {
   if(!palettes.length||_generating)return;
   _generating=true;
-  try {('c');
+
+  const canvas=document.getElementById('c');
   const ctx=canvas.getContext('2d');
   const W=canvas.width,H=canvas.height;
   const rng=new Rng(seed);
@@ -547,7 +546,6 @@ function draw(seed) {
   const grain=bakeGrain(W,H,colors,GRAIN_SCALE);
   applyGrain(ctx,W,H,grain);
 
-  } catch(e){ _generating=false; console.error("PLLSG:",e); return; }
   _generating=false;
 
   // ── TRAITS ──────────────────────────────────────────
@@ -557,6 +555,7 @@ function draw(seed) {
   const finishRarity=dominantFinish==='ribbed'||dominantFinish==='chess'?'rare':dominantFinish==='gradient'||dominantFinish==='outline'||dominantFinish==='translucent'?'uncommon':'common';
   const score=pal.prob*(archRarity==='superrare'?0.1:archRarity==='rare'?0.3:archRarity==='uncommon'?0.7:1)*(finishRarity==='rare'?0.3:finishRarity==='uncommon'?0.7:1);
   const overall=score>0.06?'common':score>0.025?'uncommon':score>0.008?'rare':score>0.002?'superrare':'legendary';
+}
 
 function generate(){currentSeed=(Math.random()*0xFFFFFFFF)>>>0;currentTimestamp=new Date();scrambleAndDraw(currentSeed,()=>draw(currentSeed));}
 
