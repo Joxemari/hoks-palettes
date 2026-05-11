@@ -187,7 +187,7 @@ const PILL_ALPHA    = 0.72;  // pills drawn semi-transparent over gradient
 
 const OFF_WHITE='#f5f0ea';const GRAIN_TILE=14;const PLACE_ATT=24;
 const GRAIN_MAG=1.0;const GRAIN_AMIN=0.4;const GRAIN_AMAX=0.8;const GRAIN_SAMPLES=3;
-let GRAIN_SCALE=1.0;
+var GRAIN_SCALE=1.0;
 
 const ARCHETYPES=[
   {name:'Scattered', prob:0.52,pillMin:5, pillMax:8 },
@@ -316,7 +316,7 @@ const DEFAULTS=[
 const RL={common:'Common',uncommon:'Uncommon',rare:'Rare',superrare:'Super Rare',legendary:'Legendary'};
 const RC={common:'common',uncommon:'uncommon',rare:'rare',superrare:'superrare',legendary:'legendary'};
 
-let palettes=[],currentSeed=(Math.random()*0xFFFFFFFF)>>>0;
+var palettes=[],currentSeed=(Math.random()*0xFFFFFFFF)>>>0;
 let currentTimestamp=new Date(),gallery=[],lastTraits=[],lastOverall='';
 
 class Rng {
@@ -528,7 +528,7 @@ function updatePalPreviewBar() {
 function getActivePalette(rng){if(_paletteLocked&&palettes[_lockedPalIdx])return palettes[_lockedPalIdx];return rng?rng.weighted(palettes):palettes[Math.floor(Math.random()*palettes.length)];}
 
 // ── DRAW ──────────────────────────────────────────────
-let _generating = false;
+var _generating = false;
 
 
 // ── DRAW ──────────────────────────────────────────────
